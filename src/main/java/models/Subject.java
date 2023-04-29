@@ -1,25 +1,37 @@
 package models;
 
+import jakarta.persistence.*;
+import models.courses.Class;
+
+import java.util.List;
+
+@Entity
+@Table(name = "subject")
 public class Subject {
     // Attributes
-    private String identifier;
+    @Id
+    private Long id;
+    @Column(name = "name")
     private String name;
+    @OneToMany(mappedBy = "classes")
+    private List<Class> classes;
 
     // Constructor
-    public Subject(String subject_id, String subject_name) {
+    public Subject() {}
+    public Subject(Long subject_id, String subject_name) {
         this.name = subject_name;
-        this.identifier = subject_id;
+        this.id = subject_id;
     }
     public Subject(Subject subject_instance) {
         this.name = subject_instance.getName();
-        this.identifier = subject_instance.getIdentifier();
+        this.id = subject_instance.getIdentifier();
     }
 
     // Getters
     public String getName() {
         return this.name;
     }
-    public String getIdentifier() {
-        return this.identifier;
+    public Long getIdentifier() {
+        return this.id;
     }
 }

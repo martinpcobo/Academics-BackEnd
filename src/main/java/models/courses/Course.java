@@ -1,5 +1,6 @@
-package models;
+package models.courses;
 
+import jakarta.persistence.*;
 import models.users.Professor;
 import models.users.Student;
 import models.users.User;
@@ -7,40 +8,44 @@ import models.users.User;
 import java.util.Date;
 import java.util.List;
 
-public class Class {
+@Entity
+@Table(name = "course")
+public abstract class Course {
     // Attributes
-    private Long identifier;
-    private Subject subject;
+    @Id
+    private Long id;
+    @ManyToMany(mappedBy = "professors")
     private List<Professor> professors;
+    @ManyToMany(mappedBy = "students")
     private List<Student> students;
+    @Column(name = "start_date")
+    @Temporal(value = TemporalType.DATE)
     private Date start_date;
+    @Column(name = "end_date")
+    @Temporal(value = TemporalType.DATE)
     private Date end_date;
 
-
     // Constructors
-    Class(Long class_id, Subject subject_instance, List<Student> students_list, List<Professor> professors_list, Date class_start_date, Date class_end_date) {
-        this.identifier = class_id;
-        this.subject = subject_instance;
+    public Course() {}
+    public Course(Long course_id, List<Student> students_list, List<Professor> professors_list, Date course_start_date, Date course_end_date) {
+        this.id = course_id;
         this.students = students_list;
         this.professors = professors_list;
-        this.start_date = class_start_date;
-        this.end_date = class_end_date;
+        this.start_date = course_start_date;
+        this.end_date = course_end_date;
     }
-    Class(Class class_instance) {
-        this.identifier = class_instance.getIdentifier();
-        this.subject = class_instance.getSubject();
-        this.students = class_instance.getStudents();
-        this.professors = class_instance.getProfessors();
-        this.end_date = class_instance.getEndDate();
-        this.start_date = class_instance.getStartDate();
+    public Course(Course course_instance) {
+        this.id = course_instance.getIdentifier();
+        this.students = course_instance.getStudents();
+        this.professors = course_instance.getProfessors();
+        this.end_date = course_instance.getEndDate();
+        this.start_date = course_instance.getStartDate();
     }
 
+    // * Methods
     // Getters
     public Long getIdentifier() {
-        return this.identifier;
-    }
-    public Subject getSubject() {
-        return new Subject(this.subject);
+        return this.id;
     }
     public List<Student> getStudents() {
         return this.students.stream().map((student) -> new Student(student)).toList();
@@ -53,6 +58,13 @@ public class Class {
     }
     public Date getEndDate() {
         return this.end_date;
+    }
+    // Setters
+    public void setStartDate(Date start_date) {
+        this.start_date = start_date;
+    }
+    public void setEndDate(Date end_date) {
+        this.end_date = end_date;
     }
 
     // Student Methods
