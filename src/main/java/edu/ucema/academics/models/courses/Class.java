@@ -1,9 +1,9 @@
-package models.courses;
+package edu.ucema.academics.models.courses;
 
+import edu.ucema.academics.models.Subject;
+import edu.ucema.academics.models.users.Professor;
+import edu.ucema.academics.models.users.Student;
 import jakarta.persistence.*;
-import models.Subject;
-import models.users.Professor;
-import models.users.Student;
 
 import java.util.Date;
 import java.util.List;

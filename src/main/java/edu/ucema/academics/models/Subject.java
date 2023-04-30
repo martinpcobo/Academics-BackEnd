@@ -1,7 +1,7 @@
-package models;
+package edu.ucema.academics.models;
 
 import jakarta.persistence.*;
-import models.courses.Class;
+import edu.ucema.academics.models.courses.Class;
 
 import java.util.List;
 
@@ -13,7 +13,7 @@ public class Subject {
     private Long id;
     @Column(name = "name")
     private String name;
-    @OneToMany(mappedBy = "classes")
+    @OneToMany(mappedBy = "subject")
     private List<Class> classes;
 
     // Constructor

@@ -1,9 +1,9 @@
-package models.courses;
+package edu.ucema.academics.models.courses;
 
+import edu.ucema.academics.models.users.Professor;
+import edu.ucema.academics.models.users.Student;
+import edu.ucema.academics.models.users.User;
 import jakarta.persistence.*;
-import models.users.Professor;
-import models.users.Student;
-import models.users.User;
 
 import java.util.Date;
 import java.util.List;
@@ -13,17 +13,19 @@ import java.util.List;
 public abstract class Course {
     // Attributes
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
-    @ManyToMany(mappedBy = "professors")
+    @ManyToMany(mappedBy = "courses")
     private List<Professor> professors;
-    @ManyToMany(mappedBy = "students")
+    @ManyToMany(mappedBy = "courses")
     private List<Student> students;
     @Column(name = "start_date")
     @Temporal(value = TemporalType.DATE)
-    private Date start_date;
+    private Date startDate;
     @Column(name = "end_date")
     @Temporal(value = TemporalType.DATE)
-    private Date end_date;
+    private Date endDate;
 
     // Constructors
     public Course() {}
@@ -31,15 +33,15 @@ public abstract class Course {
         this.id = course_id;
         this.students = students_list;
         this.professors = professors_list;
-        this.start_date = course_start_date;
-        this.end_date = course_end_date;
+        this.startDate = course_start_date;
+        this.endDate = course_end_date;
     }
     public Course(Course course_instance) {
         this.id = course_instance.getIdentifier();
         this.students = course_instance.getStudents();
         this.professors = course_instance.getProfessors();
-        this.end_date = course_instance.getEndDate();
-        this.start_date = course_instance.getStartDate();
+        this.endDate = course_instance.getEndDate();
+        this.startDate = course_instance.getStartDate();
     }
 
     // * Methods
@@ -54,17 +56,17 @@ public abstract class Course {
         return this.professors.stream().map((professor) -> new Professor(professor)).toList();
     }
     public Date getStartDate() {
-        return this.start_date;
+        return this.startDate;
     }
     public Date getEndDate() {
-        return this.end_date;
+        return this.endDate;
     }
     // Setters
     public void setStartDate(Date start_date) {
-        this.start_date = start_date;
+        this.startDate = start_date;
     }
     public void setEndDate(Date end_date) {
-        this.end_date = end_date;
+        this.endDate = end_date;
     }
 
     // Student Methods
