@@ -1,34 +1,52 @@
 package edu.ucema.academics.models.users;
 
 import edu.ucema.academics.models.courses.Course;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-
-import jakarta.persistence.Entity;
+import edu.ucema.academics.models.courses.Grade;
+import jakarta.persistence.*;
 
 import java.util.List;
 
 @Entity
+@Table(name = "student")
 public final class Student extends User {
-    @ManyToMany()
-    @JoinTable(
-            name = "student_to_class",
-            joinColumns = @JoinColumn(name = "id_student"),
-            inverseJoinColumns = @JoinColumn(name = "id_course")
-    )
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "student_to_course", joinColumns = @JoinColumn(name = "id_student"), inverseJoinColumns = @JoinColumn(name = "id_course"))
     private List<Course> courses;
-    public Student() {}
-    public Student(Long student_id, String user_name, String user_last_name, Email email, Password password, List<Course> student_courses) {
-        super(student_id, user_name, user_last_name, email, password);
-        this.courses = student_courses;
-    }
-    public Student(Student student_instance) {
-        super(student_instance);
-        this.courses = student_instance.courses;
+
+    @OneToMany(mappedBy = "student", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    private List<Grade> grades;
+
+    @OneToOne(mappedBy = "studentProfile", fetch = FetchType.LAZY)
+    private User user;
+
+    public Student() {
     }
 
-    public List<Course> getClasses() {
+    public Student(Student student_instance) {
+        super(student_instance.getUser());
+        this.setCourses(student_instance.getCourses());
+        this.setUser(student_instance.getUser());
+        this.setGrades(student_instance.getGrades());
+    }
+
+    public Student(User user, List<Course> student_courses, List<Grade> grades_list) {
+        super(user);
+        this.setUser(user);
+        this.setCourses(student_courses);
+        this.setGrades(grades_list);
+    }
+
+    // Getters
+    public List<Course> getCourses() {
         return this.courses;
     }
+    public User getUser() { return this.user; }
+    public List<Grade> getGrades() { return this.grades; }
+
+    // Setters
+    public void setCourses(List<Course> courses) {
+        this.courses = courses;
+    }
+    public void setUser(User user) { this.user = new User(user); }
+    public void setGrades(List<Grade> grade_list) { this.grades = grade_list; }
 }

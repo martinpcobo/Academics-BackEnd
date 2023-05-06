@@ -2,8 +2,8 @@ package edu.ucema.academics.models.courses;
 
 import edu.ucema.academics.models.users.Professor;
 import edu.ucema.academics.models.users.Student;
-import edu.ucema.academics.models.users.User;
 import jakarta.persistence.*;
+import org.hibernate.annotations.GenericGenerator;
 
 import java.util.Date;
 import java.util.List;
@@ -13,101 +13,109 @@ import java.util.List;
 public abstract class Course {
     // Attributes
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private Long id;
-    @ManyToMany(mappedBy = "courses")
-    private List<Professor> professors;
-    @ManyToMany(mappedBy = "courses")
-    private List<Student> students;
+    @GeneratedValue(strategy = GenerationType.UUID, generator = "uuid2")
+    @GenericGenerator(name = "uuid2", strategy = "uuid2")
+    private String id;
     @Column(name = "start_date")
     @Temporal(value = TemporalType.DATE)
     private Date startDate;
     @Column(name = "end_date")
     @Temporal(value = TemporalType.DATE)
     private Date endDate;
+    @Column(name = "name")
+    private String name;
+    @Column(name = "description")
+    private String description;
+
+
+    @ManyToMany(mappedBy = "courses", fetch = FetchType.LAZY)
+    private List<Professor> professors;
+    @ManyToMany(mappedBy = "courses", fetch = FetchType.LAZY)
+    private List<Student> students;
+    @OneToMany(mappedBy = "course", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    private List<Grade> grades;
 
     // Constructors
-    public Course() {}
-    public Course(Long course_id, List<Student> students_list, List<Professor> professors_list, Date course_start_date, Date course_end_date) {
-        this.id = course_id;
-        this.students = students_list;
-        this.professors = professors_list;
-        this.startDate = course_start_date;
-        this.endDate = course_end_date;
+    public Course() {
     }
+
+    public Course(String course_id, List<Student> students_list, List<Professor> professors_list, Date course_start_date, Date course_end_date, String course_name, String course_description) {
+        this.setIdentifier(course_id);
+        this.setStudents(students_list);
+        this.setProfessors(professors_list);
+        this.setStartDate(course_start_date);
+        this.setEndDate(course_end_date);
+        this.setName(course_name);
+        this.setDescription(course_description);
+    }
+
     public Course(Course course_instance) {
-        this.id = course_instance.getIdentifier();
-        this.students = course_instance.getStudents();
-        this.professors = course_instance.getProfessors();
-        this.endDate = course_instance.getEndDate();
-        this.startDate = course_instance.getStartDate();
+        this.setIdentifier(course_instance.getIdentifier());
+        this.setStudents(course_instance.getStudents());
+        this.setProfessors(course_instance.getProfessors());
+        this.setEndDate(course_instance.getEndDate());
+        this.setStartDate(course_instance.getStartDate());
+        this.setDescription(course_instance.getDescription());
     }
 
     // * Methods
+
     // Getters
-    public Long getIdentifier() {
+    public String getIdentifier() {
         return this.id;
     }
-    public List<Student> getStudents() {
-        return this.students.stream().map((student) -> new Student(student)).toList();
+
+    public String getName() {
+        return this.name;
     }
-    public List<Professor> getProfessors() {
-        return this.professors.stream().map((professor) -> new Professor(professor)).toList();
+
+    public String getDescription() {
+        return this.description;
     }
+
     public Date getStartDate() {
         return this.startDate;
     }
+
     public Date getEndDate() {
         return this.endDate;
     }
+
+    public List<Professor> getProfessors() {
+        return this.professors.stream().map((professor) -> new Professor(professor)).toList();
+    }
+
+    public List<Student> getStudents() {
+        return this.students.stream().map((student) -> new Student(student)).toList();
+    }
+
     // Setters
+    public void setIdentifier(String course_id) {
+        this.id = course_id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     public void setStartDate(Date start_date) {
         this.startDate = start_date;
     }
+
     public void setEndDate(Date end_date) {
         this.endDate = end_date;
     }
 
-    // Student Methods
-    private Student getStudentById(Long student_id) {
-        List<Student> users_results = this.students.stream().filter(student -> student.getIdentifier().equals(student_id)).toList();
-        return users_results.size() == 1 ? users_results.get(0) : null;
-    }
-    public boolean isStudentSubscribed(User student) {
-        return this.getStudentById(student.getIdentifier()) != null;
-    }
-    public void addStudent(Student student) {
-        student = new Student(student);
-        if (!this.isStudentSubscribed(student)) {
-            this.students.add(student);
-        }
-    }
-    public void removeStudent(Student student) {
-        student = new Student(student);
-        if (this.isStudentSubscribed(student)) {
-            this.students.remove(this.getStudentById(student.getIdentifier()));
-        }
+    public void setProfessors(List<Professor> professors_list) {
+        this.professors = professors_list.stream().map((professor) -> new Professor(professor)).toList();
     }
 
-    // Professor Methods
-    private Professor getProfessorById(Long professor_id) {
-        List<Professor> users_results = this.professors.stream().filter(user -> user.getIdentifier().equals(professor_id)).toList();
-        return users_results.size() == 1 ? users_results.get(0) : null;
-    }
-    public boolean isProfessorSubscribed(User professor) {
-        return this.getProfessorById(professor.getIdentifier()) != null;
-    }
-    public void addProfessor(Professor professor) {
-        professor = new Professor(professor);
-        if (!this.isProfessorSubscribed(professor)) {
-            this.professors.add(professor);
-        }
-    }
-    public void removeProfessor(Professor professor) {
-        professor = new Professor(professor);
-        if (this.isProfessorSubscribed(professor)) {
-            this.professors.remove(this.getProfessorById(professor.getIdentifier()));
-        }
+    public void setStudents(List<Student> student_list) {
+        this.students = student_list.stream().map((student) -> new Student(student)).toList();
     }
 }
