@@ -35,8 +35,9 @@ public class ProfessorService {
         if (opt_db_user.isPresent()) {
             User db_user = opt_db_user.get();
 
-            Professor new_professor = new Professor(db_user, new ArrayList<Course>());
-            new_professor.setIdentifier(db_user.getIdentifier());
+            Professor new_professor = new Professor();
+            new_professor.setUser(db_user);
+            new_professor.setCourses(new ArrayList<Course>());
 
             return this.professor_repository.save(new_professor);
         } else {

@@ -1,11 +1,12 @@
 package edu.ucema.academics.models.dtos;
 
 public class PasswordChangeDTO {
-    // Attributes
+    // ! Attributes
+    // * Data
     private String newPassword;
     private String oldPassword;
 
-    // Constructor
+    // ! Constructors
     public PasswordChangeDTO() {}
     public PasswordChangeDTO(String newPassword, String oldPassword) {
         this.setNewPassword(newPassword);
@@ -16,16 +17,16 @@ public class PasswordChangeDTO {
         this.setOldPassword(password_change_instance.getOldPassword());
     }
 
-    // Methods
+    // ! Methods
 
-    // Setters
+    // * Setters
     public void setNewPassword(String new_password) {
         this.newPassword = new_password;
     }
     public void setOldPassword(String old_password) {
         this.oldPassword = old_password;
     }
-    // Getters
+    // * Getters
     public String getNewPassword() { return this.newPassword; }
     public String getOldPassword() { return this.oldPassword; }
 }

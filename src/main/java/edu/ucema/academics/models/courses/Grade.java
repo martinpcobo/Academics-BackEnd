@@ -8,12 +8,17 @@ import org.hibernate.annotations.GenericGenerator;
 @Entity
 @Table(name = "grade")
 public class Grade {
+    // ! Attributes
+    // * Data
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.UUID, generator = "uuid2")
     @GenericGenerator(name = "uuid2", strategy = "uuid2")
     private String id;
+    @Column(name = "value")
+    private Float value;
 
+    // * Relationships
     @ManyToOne
     @JoinColumn(name = "course_id")
     private Course course;
@@ -22,9 +27,9 @@ public class Grade {
     @JoinColumn(name = "student_id")
     private Student student;
 
-    @Column(name = "value")
-    private Float value;
-
+    // ! Constructors
+    public Grade() {
+    }
     public Grade(String id, Course course, Student student, Float value) {
         this.setIdentifier(id);
         this.setCourse(course);
@@ -39,39 +44,31 @@ public class Grade {
         this.setValue(grade_instance.getValue());
     }
 
-    public Grade() {
-    }
-
-    // Getters
+    // ! Methods
+    // * Getters
     public String getIdentifier() {
         return this.id;
     }
-
-    // Setters
-    public void setIdentifier(String id) {
-        this.id = id;
-    }
-
     public Course getCourse() {
         return this.course;
     }
-
-    public void setCourse(Course course) {
-        this.course = course;
-    }
-
     public Student getStudent() {
         return this.student;
     }
-
-    public void setStudent(Student student) {
-        this.student = student;
-    }
-
     public Float getValue() {
         return this.value;
     }
 
+    // * Setters
+    public void setIdentifier(String id) {
+        this.id = id;
+    }
+    public void setCourse(Course course) {
+        this.course = course;
+    }
+    public void setStudent(Student student) {
+        this.student = student;
+    }
     public void setValue(Float value) {
         this.value = value;
     }

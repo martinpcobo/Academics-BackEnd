@@ -12,6 +12,7 @@ import edu.ucema.academics.repositories.StudentRepository;
 import edu.ucema.academics.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,12 +37,14 @@ public class StudentService {
     // * Business Logic
 
     // Subscribe a User as a Student
+    @Transactional
     public Student subscribeUser(String user_id) throws Exception {
         Optional<User> opt_db_user = user_repository.findById(user_id);
         if (opt_db_user.isPresent()) {
-            User db_user = opt_db_user.get();
-
-            Student new_student = new Student(db_user, new ArrayList<Course>(), new ArrayList<Grade>());
+            Student new_student = new Student();
+            new_student.setCourses(new ArrayList<Course>());
+            new_student.setGrades(new ArrayList<Grade>());
+            new_student.setUser(opt_db_user.get());
 
             return this.student_repository.save(new_student);
         } else {

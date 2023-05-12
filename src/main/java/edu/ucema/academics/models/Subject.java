@@ -1,5 +1,6 @@
 package edu.ucema.academics.models;
 
+import edu.ucema.academics.models.users.Student;
 import jakarta.persistence.*;
 import edu.ucema.academics.models.courses.Class;
 import org.hibernate.annotations.GenericGenerator;
@@ -23,22 +24,35 @@ public class Subject {
     public Subject() {
     }
 
-    public Subject(String subject_id, String subject_name) {
-        this.name = subject_name;
-        this.id = subject_id;
+    public Subject(String subject_id, String subject_name, List<Class> classes_list) {
+        this.setName(subject_name);
+        this.setIdentifier(subject_id);
+        this.setClasses(classes_list);
     }
 
     public Subject(Subject subject_instance) {
-        this.name = subject_instance.getName();
-        this.id = subject_instance.getIdentifier();
+        this.setName(subject_instance.getName());
+        this.setIdentifier(subject_instance.getIdentifier());
+        this.setClasses(subject_instance.getClasses());
     }
 
     // Getters
+    public String getIdentifier() {
+        return this.id;
+    }
     public String getName() {
         return this.name;
     }
+    public List<Class> getClasses() { return this.classes; }
 
-    public String getIdentifier() {
-        return this.id;
+    // Setters
+    public void setIdentifier(String id) {
+        this.id = id;
+    }
+    public void setName(String name) {
+        this.name = name;
+    }
+    public void setClasses(List<Class> classes) {
+        this.classes = classes.stream().map((class_ind) -> new Class(class_ind)).toList();;
     }
 }

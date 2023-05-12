@@ -11,7 +11,8 @@ import java.util.List;
 @Entity
 @Table(name = "course")
 public abstract class Course {
-    // Attributes
+    // ! Attributes
+    // * Data
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.UUID, generator = "uuid2")
@@ -28,7 +29,7 @@ public abstract class Course {
     @Column(name = "description")
     private String description;
 
-
+    // * Relationships
     @ManyToMany(mappedBy = "courses", fetch = FetchType.LAZY)
     private List<Professor> professors;
     @ManyToMany(mappedBy = "courses", fetch = FetchType.LAZY)
@@ -36,10 +37,9 @@ public abstract class Course {
     @OneToMany(mappedBy = "course", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     private List<Grade> grades;
 
-    // Constructors
+    // ! Constructors
     public Course() {
     }
-
     public Course(String course_id, List<Student> students_list, List<Professor> professors_list, Date course_start_date, Date course_end_date, String course_name, String course_description) {
         this.setIdentifier(course_id);
         this.setStudents(students_list);
@@ -49,7 +49,6 @@ public abstract class Course {
         this.setName(course_name);
         this.setDescription(course_description);
     }
-
     public Course(Course course_instance) {
         this.setIdentifier(course_instance.getIdentifier());
         this.setStudents(course_instance.getStudents());
@@ -59,62 +58,49 @@ public abstract class Course {
         this.setDescription(course_instance.getDescription());
     }
 
-    // * Methods
-
-    // Getters
+    // ! Methods
+    // * Getters
     public String getIdentifier() {
         return this.id;
     }
-
     public String getName() {
         return this.name;
     }
-
     public String getDescription() {
         return this.description;
     }
-
     public Date getStartDate() {
         return this.startDate;
     }
-
     public Date getEndDate() {
         return this.endDate;
     }
-
     public List<Professor> getProfessors() {
         return this.professors.stream().map((professor) -> new Professor(professor)).toList();
     }
-
     public List<Student> getStudents() {
         return this.students.stream().map((student) -> new Student(student)).toList();
     }
 
-    // Setters
+    // * Setters
     public void setIdentifier(String course_id) {
         this.id = course_id;
     }
-
     public void setName(String name) {
         this.name = name;
     }
-
     public void setDescription(String description) {
         this.description = description;
     }
-
     public void setStartDate(Date start_date) {
         this.startDate = start_date;
     }
-
     public void setEndDate(Date end_date) {
         this.endDate = end_date;
     }
-
     public void setProfessors(List<Professor> professors_list) {
         this.professors = professors_list.stream().map((professor) -> new Professor(professor)).toList();
     }
-
     public void setStudents(List<Student> student_list) {
         this.students = student_list.stream().map((student) -> new Student(student)).toList();
     }

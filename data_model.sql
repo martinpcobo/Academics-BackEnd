@@ -6,23 +6,19 @@ CREATE TABLE password (
     PRIMARY KEY (id)
 );
 CREATE TABLE student (
-    id VARCHAR(36) NOT NULL,
-    PRIMARY KEY (id)
+    user_id VARCHAR(36) NOT NULL,
+    PRIMARY KEY (user_id)
 );
 
 CREATE TABLE professor (
-    id VARCHAR(36) NOT NULL,
-    PRIMARY KEY (id)
+    user_id VARCHAR(36) NOT NULL,
+    PRIMARY KEY (user_id)
 );
 CREATE TABLE user(
 	id VARCHAR(36) ,
 	PRIMARY KEY (id),
 	password_id VARCHAR(36),
 	FOREIGN KEY (password_id) REFERENCES password(id) ON DELETE CASCADE,
-	professor_id VARCHAR(36),
-	FOREIGN KEY (professor_id) REFERENCES professor(id) ON DELETE CASCADE,
-	student_id VARCHAR(36),
-	FOREIGN KEY (student_id) REFERENCES student(id) ON DELETE CASCADE,
 
 	first_name VARCHAR(50) NOT NULL,
 	last_name VARCHAR(50) NOT NULL,
@@ -30,6 +26,9 @@ CREATE TABLE user(
 	verified_email VARCHAR(100) DEFAULT NULL,
 	email_verification_code VARCHAR(36) DEFAULT NULL
 );
+
+ALTER TABLE student ADD FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE;
+ALTER TABLE professor ADD FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE;
 
 CREATE TABLE course (
     id VARCHAR(36) NOT NULL,
@@ -69,7 +68,7 @@ CREATE TABLE student_to_course (
     id_student VARCHAR(36),
     id_course VARCHAR(36),
     PRIMARY KEY(id),
-    FOREIGN KEY (id_student) REFERENCES academics_dev.student(id) ON DELETE SET NULL,
+    FOREIGN KEY (id_student) REFERENCES academics_dev.student(user_id) ON DELETE SET NULL,
     FOREIGN KEY (id_course) REFERENCES academics_dev.course(id) ON DELETE SET NULL
 );
 
@@ -78,6 +77,6 @@ CREATE TABLE professor_to_course (
     id_professor VARCHAR(36),
     id_course VARCHAR(36),
     PRIMARY KEY(id),
-    FOREIGN KEY (id_professor) REFERENCES academics_dev.professor(id) ON DELETE SET NULL,
+    FOREIGN KEY (id_professor) REFERENCES academics_dev.professor(user_id) ON DELETE SET NULL,
     FOREIGN KEY (id_course) REFERENCES academics_dev.course(id) ON DELETE SET NULL
 );

@@ -37,9 +37,7 @@ public class UserService {
 
         // Set the User's Password
         Password new_password = new Password(user.getPassword());
-        new_password.setUser(db_user);
-        password_repository.save(new_password);
-        db_user.setPassword(new_password);
+        db_user.setPassword(password_repository.save(new_password));
 
         return this._getSecureUser(user_repository.save(db_user));
     }

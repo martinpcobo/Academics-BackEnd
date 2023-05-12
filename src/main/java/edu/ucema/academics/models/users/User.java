@@ -8,7 +8,8 @@ import org.hibernate.annotations.GenericGenerator;
 @Table(name = "user")
 @Inheritance(strategy = InheritanceType.JOINED)
 public class User implements IUser {
-    // Attributes
+    // ! Attributes
+    // * Data
     @Id
     @GeneratedValue(strategy = GenerationType.UUID, generator = "uuid2")
     @GenericGenerator(name = "uuid2", strategy = "uuid2")
@@ -27,19 +28,19 @@ public class User implements IUser {
     @Column(name = "email_verification_code")
     private String emailVerificationCode;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "password_id", referencedColumnName = "id")
+    // * Relationships
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinColumn(name = "password_id")
     private Password password;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "student_id", referencedColumnName = "id")
+    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
+    @PrimaryKeyJoinColumn
     private Student studentProfile;
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "professor_id", referencedColumnName = "id")
+    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
+    @PrimaryKeyJoinColumn
     private Professor professorProfile;
 
-
-    // Constructors
+    // ! Constructors
     protected User() {
     }
 
@@ -73,7 +74,8 @@ public class User implements IUser {
         this.setName();
     }
 
-    // Setter
+    // ! Methods
+    // * Getters
     public String getIdentifier() {
         return this.id;
     }
@@ -102,7 +104,7 @@ public class User implements IUser {
     public Student getStudentProfile() { return this.studentProfile; }
 
 
-    // Setters
+    // * Setters
     public void setIdentifier(String user_id) {
         this.id = user_id;
     }
@@ -114,7 +116,7 @@ public class User implements IUser {
         this.lastName = last_name;
         this.setName();
     }
-    public void setName() {
+    private void setName() {
         this.name = this.getFirstName() + " " + this.getLastName();
     }
     public void setVerifiedEmail(String verified_email) {

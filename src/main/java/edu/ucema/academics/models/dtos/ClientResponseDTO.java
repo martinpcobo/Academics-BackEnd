@@ -1,22 +1,23 @@
 package edu.ucema.academics.models.dtos;
 
 public class ClientResponseDTO {
-    // Attributes
+    // ! Attributes
+    // * Data
     private String message;
 
-    // Constructors
+    // ! Constructors
     public ClientResponseDTO(String message) {
         this.setMessage(message);
     }
 
-    // Methods
+    // ! Methods
 
-    // Setters
+    // * Setters
     public void setMessage(String message_details) {
         this.message = message_details;
     }
 
-    // Getters
+    // * Getters
     public String getMessage() { return this.message; }
 
 }
