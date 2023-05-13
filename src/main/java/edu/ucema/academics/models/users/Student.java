@@ -26,10 +26,8 @@ public final class Student {
             inverseJoinColumns = @JoinColumn(name = "id_course", referencedColumnName = "id")
     )
     private List<Course> courses;
-
     @OneToMany(mappedBy = "student", fetch = FetchType.LAZY)
     private List<Grade> grades;
-
     @OneToOne(fetch = FetchType.EAGER)
     @MapsId
     @JoinColumn(name = "user_id", referencedColumnName = "id")

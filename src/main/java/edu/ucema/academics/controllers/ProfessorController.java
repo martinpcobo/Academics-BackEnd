@@ -13,10 +13,12 @@ import org.springframework.web.bind.annotation.*;
         methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE}
 )
 public class ProfessorController {
+    // ! Injected Dependencies
     @Autowired
     ProfessorService professor_service;
 
-    // Create Professor
+    // ! Endpoints
+    // * Create Professor
     @PostMapping(path = "/{user_id}")
     public ResponseEntity<?> subscribeProfessor(@PathVariable String user_id) {
         try {
@@ -26,7 +28,7 @@ public class ProfessorController {
         }
     }
 
-    // Delete Professor
+    // * Delete Professor
     @DeleteMapping(path = "/{professor_id}")
     public ResponseEntity<?> deleteProfessor(@PathVariable String professor_id) {
         try {
@@ -40,5 +42,13 @@ public class ProfessorController {
         }
     }
 
-    // TODO: Endpoints to be tested.
+    // * Get Professor By Id
+    @GetMapping(path = "/{professor_id}")
+    public ResponseEntity<?> getProfessorProfile(@PathVariable String professor_id) {
+        try {
+            return ResponseEntity.status(200).body(professor_service.getProfessorById(professor_id));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(e);
+        }
+    }
 }

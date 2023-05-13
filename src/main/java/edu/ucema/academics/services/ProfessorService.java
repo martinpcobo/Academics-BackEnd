@@ -1,7 +1,5 @@
 package edu.ucema.academics.services;
 
-import edu.ucema.academics.models.courses.Class;
-import edu.ucema.academics.models.courses.Course;
 import edu.ucema.academics.models.users.Professor;
 import edu.ucema.academics.models.users.User;
 import edu.ucema.academics.repositories.ClassRepository;
@@ -11,12 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
 public class ProfessorService {
-    // Attributes
+    // ! Injected Dependencies
     @Autowired
     private ProfessorRepository professor_repository;
     @Autowired
@@ -24,11 +21,12 @@ public class ProfessorService {
     @Autowired
     private ClassRepository class_repository;
 
-    // Constructors
+    // ! Constructors
     public ProfessorService() {
     }
 
-    // Business Logic
+    // ! Business Logic
+    // * Create a Professor Profile
     @Transactional
     public Professor subscribeProfessor(String user_id) throws Exception {
         Optional<User> opt_db_user = user_repository.findById(user_id);
@@ -43,6 +41,18 @@ public class ProfessorService {
         }
     }
 
+    // * Get Professor Profile
+    @Transactional
+    public Professor getProfessorById(String prof_id) throws Exception {
+        Optional<Professor> opt_db_prof = professor_repository.findById(prof_id);
+        if (opt_db_prof.isPresent()) {
+            return opt_db_prof.get();
+        } else {
+            throw new Exception("Professor not found.");
+        }
+    }
+
+    // * Delete a Professor Profile
     @Transactional
     public boolean deleteProfessor(String professor_id) throws Exception {
         Optional<Professor> opt_db_professor = professor_repository.findById(professor_id);
@@ -51,41 +61,6 @@ public class ProfessorService {
             return !this.professor_repository.existsById(professor_id);
         } else {
             throw new Exception("Professor not found.");
-        }
-    }
-
-    // TODO: Methods to be Tested
-    public void addClass(String professor_id, String class_id) throws Exception {
-        Optional<Professor> opt_db_user = professor_repository.findById(professor_id);
-        Optional<Class> opt_db_class = class_repository.findById(class_id);
-        if (opt_db_user.isPresent() && opt_db_class.isPresent()) {
-            Professor db_professor = opt_db_user.get();
-            Class db_class = opt_db_class.get();
-
-            List<Course> professor_courses = db_professor.getCourses();
-            professor_courses.add(db_class);
-            db_professor.setCourses(professor_courses);
-            this.professor_repository.save(db_professor);
-        } else {
-            throw new Exception("Professor or Class not found.");
-        }
-    }
-
-    public void removeClass(String professor_id, String class_id) throws Exception {
-        Optional<Professor> opt_db_professor = professor_repository.findById(professor_id);
-        Optional<Class> opt_db_class = class_repository.findById(class_id);
-        if (opt_db_professor.isPresent() && opt_db_class.isPresent()) {
-            Professor db_professor = opt_db_professor.get();
-            Class db_class = opt_db_class.get();
-
-            // Remove the course from the student to course M2M.
-            List<Course> professor_courses = db_professor.getCourses();
-            professor_courses.remove(db_class);
-            db_professor.setCourses(professor_courses);
-
-            this.professor_repository.save(db_professor);
-        } else {
-            throw new Exception("Professor or Course not found.");
         }
     }
 }

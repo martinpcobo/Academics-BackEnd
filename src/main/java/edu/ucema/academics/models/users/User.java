@@ -34,7 +34,6 @@ public class User implements IUser {
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "password_id")
     private Password password;
-
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
     @PrimaryKeyJoinColumn
     private Student studentProfile;

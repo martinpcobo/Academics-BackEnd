@@ -9,11 +9,11 @@ import java.util.Optional;
 
 @Service
 public class SubjectService {
-    // Injectable Repositories
+    // ! Injected Dependencies
     @Autowired
     private SubjectRepository subject_repositories;
 
-    // Constructor
+    // ! Constructors
     public void SubjectRepository() {
     }
 

@@ -16,7 +16,7 @@ import java.util.Optional;
 
 @Service
 public class ClassService {
-    // ! Injectable Dependencies
+    // ! Injected Dependencies
     @Autowired
     private ClassRepository class_repository;
     @Autowired

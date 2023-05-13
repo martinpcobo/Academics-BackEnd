@@ -13,22 +13,26 @@ import java.util.UUID;
 
 @Service
 public class UserService {
-    // Attributes
+    // ! Injected Dependencies
     @Autowired
     private UserRepository user_repository;
     @Autowired
     private PasswordRepository password_repository;
 
-    // Constructors
+    // ! Constructors
     public UserService() {
     }
 
-    // Business Logic
+    // ! Methods
+    // * Get Secure User
     private User _getSecureUser(User user) {
         user.setPassword(null);
         return user;
     }
 
+    // ! Business Logic
+
+    // * Create a User
     public User createUser(User user) {
         User new_user = new User(user);
         new_user.setPassword(null);
@@ -42,6 +46,7 @@ public class UserService {
         return this._getSecureUser(user_repository.save(db_user));
     }
 
+    // * Delete a User
     public Boolean deleteUser(String user_id) throws Exception {
         Optional<User> opt_db_user = user_repository.findById(user_id);
         if (opt_db_user.isPresent()) {
@@ -52,6 +57,7 @@ public class UserService {
         }
     }
 
+    // * Update User Details by Id
     public User modifyUserName(String user_id, User user) throws Exception {
         Optional<User> opt_db_user = user_repository.findById(user_id);
         if (opt_db_user.isPresent()) {
@@ -65,6 +71,7 @@ public class UserService {
         }
     }
 
+    // * Update User Email by Id
     public User modifyUserEmail(String user_id, User user) throws Exception {
         Optional<User> opt_db_user = user_repository.findById(user_id);
         if (opt_db_user.isPresent()) {
@@ -78,6 +85,7 @@ public class UserService {
         }
     }
 
+    // * Verify User Email by Id
     public User verifyUserEmail(String user_id, String email_verification_code) throws Exception {
         Optional<User> opt_db_user = user_repository.findById(user_id);
         if (opt_db_user.isPresent()) {
@@ -97,6 +105,7 @@ public class UserService {
         }
     }
 
+    // * Change User Password
     public Boolean changePassword(String user_id, PasswordChangeDTO password_change) throws Exception {
         Optional<User> opt_db_user = user_repository.findById(user_id);
         if (opt_db_user.isPresent()) {

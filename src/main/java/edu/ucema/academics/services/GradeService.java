@@ -18,12 +18,12 @@ public class GradeService {
     }
 
     // ! Business Logic
-    // Record new Grade
+    // * Record new Grade
     public Grade recordGrade(Grade grade_instance) {
         return this.grade_repository.save(new Grade(grade_instance));
     }
 
-    // Get Grade By Id
+    // * Get Grade By Id
     public Grade getGradeById(String grade_id) throws Exception {
         Optional<Grade> opt_db_grade = grade_repository.findById(grade_id);
         if (opt_db_grade.isPresent()) {
@@ -33,7 +33,7 @@ public class GradeService {
         }
     }
 
-    // Modify a Grade
+    // * Modify a Grade
     public Grade modifyGrade(Grade grade_instance) throws Exception {
         Optional<Grade> opt_db_grade = grade_repository.findById(grade_instance.getIdentifier());
         if (opt_db_grade.isPresent()) {
@@ -45,7 +45,7 @@ public class GradeService {
         }
     }
 
-    // Delete a Grade
+    // * Delete a Grade
     public Boolean deleteGrade(String grade_id) throws Exception {
         Optional<Grade> opt_db_grade = grade_repository.findById(grade_id);
         if (opt_db_grade.isPresent()) {
