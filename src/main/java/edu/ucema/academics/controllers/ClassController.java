@@ -1,6 +1,7 @@
 package edu.ucema.academics.controllers;
 
 import edu.ucema.academics.models.courses.Class;
+import edu.ucema.academics.models.dtos.ClientResponseDTO;
 import edu.ucema.academics.services.ClassService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -15,13 +16,12 @@ import java.util.List;
         methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE}
 )
 public class ClassController {
-    // * Injected Services
+    // ! Injected Services
     @Autowired
     private ClassService class_service;
 
-    // * Business Logic
-
-    // Create a Class
+    // ! Business Logic
+    // * Create a Class
     @PostMapping(path = "/")
     public ResponseEntity<?> createClass(@RequestBody Class class_instance) {
         try {
@@ -31,7 +31,7 @@ public class ClassController {
         }
     }
 
-    // Get Class by Id
+    // * Get Class by Id
     @GetMapping(path = "/{class_id}")
     public ResponseEntity<?> getClassById(@PathVariable String class_id) {
         try {
@@ -41,41 +41,45 @@ public class ClassController {
         }
     }
 
-    // Delete a class
+    // * Delete a class
     @DeleteMapping(path = "/{class_id}")
     public ResponseEntity<?> deleteClass(@PathVariable String class_id) {
         try {
-            return ResponseEntity.status(200).body(class_service.deleteClass(class_id));
+            if (class_service.deleteClass(class_id)) {
+                return ResponseEntity.status(200).body(new ClientResponseDTO("Selected Class was deleted successfully."));
+            } else {
+                return ResponseEntity.status(500).body(new ClientResponseDTO("Selected Class could not be deleted. Please try again later."));
+            }
         } catch (Exception e) {
             return ResponseEntity.status(500).body(e);
         }
     }
 
-    // Modify the Date of a Class
-    @PutMapping(path = "/details")
-    public ResponseEntity<?> setClassDate(@RequestBody Class class_instance) {
+    // * Update Class Details
+    @PutMapping(path = "/")
+    public ResponseEntity<?> modifyClassDetails(@RequestBody Class class_instance) {
         try {
-            return ResponseEntity.status(200).body(class_service.setClassDetails(class_instance));
+            return ResponseEntity.status(200).body(class_service.modifyClassDetails(class_instance));
         } catch (Exception e) {
             return ResponseEntity.status(500).body(e);
         }
     }
 
-    // Modify the Professors of a Class
-    @PutMapping(path = "/professors")
-    public ResponseEntity<?> modifyClassProfessors(@RequestBody Class class_instance, @RequestBody List<String> professors_ids) {
+    // * Modify a Class' Professors
+    @PutMapping(path = "/{class_id}/professors")
+    public ResponseEntity<?> modifyClassProfessors(@PathVariable String class_id, @RequestBody List<String> professors_ids) {
         try {
-            return ResponseEntity.status(200).body(class_service.setClassProfessors(class_instance, professors_ids));
+            return ResponseEntity.status(200).body(class_service.setClassProfessors(class_id, professors_ids));
         } catch (Exception e) {
             return ResponseEntity.status(500).body(e);
         }
     }
 
-    // Modify the Students of a Class
-    @PutMapping(path = "/students")
-    public ResponseEntity<?> modifyClassStudents(@RequestBody Class class_instance, @RequestBody List<String> student_ids) {
+    // * Modify a Class' Students
+    @PutMapping(path = "/{class_id}/students")
+    public ResponseEntity<?> modifyClassStudents(@PathVariable String class_id, @RequestBody List<String> student_ids) {
         try {
-            return ResponseEntity.status(200).body(class_service.setClassStudents(class_instance, student_ids));
+            return ResponseEntity.status(200).body(class_service.setClassStudents(class_id, student_ids));
         } catch (Exception e) {
             return ResponseEntity.status(500).body(e);
         }

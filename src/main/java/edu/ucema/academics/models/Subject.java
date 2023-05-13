@@ -1,14 +1,16 @@
 package edu.ucema.academics.models;
 
-import edu.ucema.academics.models.users.Student;
-import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.ucema.academics.models.courses.Class;
+import jakarta.persistence.*;
 import org.hibernate.annotations.GenericGenerator;
 
 import java.util.List;
 
 @Entity
 @Table(name = "subject")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "identifier")
 public class Subject {
     // Attributes
     @Id
@@ -40,19 +42,25 @@ public class Subject {
     public String getIdentifier() {
         return this.id;
     }
+
     public String getName() {
         return this.name;
     }
-    public List<Class> getClasses() { return this.classes; }
+
+    public List<Class> getClasses() {
+        return this.classes;
+    }
 
     // Setters
     public void setIdentifier(String id) {
         this.id = id;
     }
+
     public void setName(String name) {
         this.name = name;
     }
+
     public void setClasses(List<Class> classes) {
-        this.classes = classes.stream().map((class_ind) -> new Class(class_ind)).toList();;
+        this.classes = classes;
     }
 }

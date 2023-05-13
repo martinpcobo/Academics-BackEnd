@@ -1,5 +1,8 @@
 package edu.ucema.academics.models.courses;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.ucema.academics.models.users.Professor;
 import edu.ucema.academics.models.users.Student;
 import jakarta.persistence.*;
@@ -9,7 +12,8 @@ import java.util.Date;
 import java.util.List;
 
 @Entity
-@Table(name = "course")
+@Inheritance(strategy = InheritanceType.JOINED)
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "identifier")
 public abstract class Course {
     // ! Attributes
     // * Data
@@ -31,15 +35,19 @@ public abstract class Course {
 
     // * Relationships
     @ManyToMany(mappedBy = "courses", fetch = FetchType.LAZY)
+    @JsonBackReference
     private List<Professor> professors;
     @ManyToMany(mappedBy = "courses", fetch = FetchType.LAZY)
+    @JsonBackReference
     private List<Student> students;
-    @OneToMany(mappedBy = "course", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "course", fetch = FetchType.LAZY)
+    @JsonBackReference
     private List<Grade> grades;
 
     // ! Constructors
     public Course() {
     }
+
     public Course(String course_id, List<Student> students_list, List<Professor> professors_list, Date course_start_date, Date course_end_date, String course_name, String course_description) {
         this.setIdentifier(course_id);
         this.setStudents(students_list);
@@ -49,6 +57,7 @@ public abstract class Course {
         this.setName(course_name);
         this.setDescription(course_description);
     }
+
     public Course(Course course_instance) {
         this.setIdentifier(course_instance.getIdentifier());
         this.setStudents(course_instance.getStudents());
@@ -56,6 +65,7 @@ public abstract class Course {
         this.setEndDate(course_instance.getEndDate());
         this.setStartDate(course_instance.getStartDate());
         this.setDescription(course_instance.getDescription());
+        this.setName(course_instance.getName());
     }
 
     // ! Methods
@@ -63,45 +73,59 @@ public abstract class Course {
     public String getIdentifier() {
         return this.id;
     }
+
     public String getName() {
         return this.name;
     }
+
     public String getDescription() {
         return this.description;
     }
+
     public Date getStartDate() {
         return this.startDate;
     }
+
     public Date getEndDate() {
         return this.endDate;
     }
+
     public List<Professor> getProfessors() {
-        return this.professors.stream().map((professor) -> new Professor(professor)).toList();
+        return this.professors;
     }
+
     public List<Student> getStudents() {
-        return this.students.stream().map((student) -> new Student(student)).toList();
+        return this.students;
     }
 
     // * Setters
     public void setIdentifier(String course_id) {
         this.id = course_id;
     }
+
     public void setName(String name) {
         this.name = name;
     }
+
     public void setDescription(String description) {
         this.description = description;
     }
+
     public void setStartDate(Date start_date) {
         this.startDate = start_date;
     }
+
     public void setEndDate(Date end_date) {
         this.endDate = end_date;
     }
+
     public void setProfessors(List<Professor> professors_list) {
-        this.professors = professors_list.stream().map((professor) -> new Professor(professor)).toList();
+        if (this.professors != null && this.professors.equals(professors_list)) return;
+        this.professors = professors_list;
     }
+
     public void setStudents(List<Student> student_list) {
-        this.students = student_list.stream().map((student) -> new Student(student)).toList();
+        if (this.students != null && this.students.equals(student_list)) return;
+        this.students = student_list;
     }
 }

@@ -1,12 +1,16 @@
 package edu.ucema.academics.models.courses;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.ucema.academics.models.users.Student;
-import edu.ucema.academics.models.users.User;
 import jakarta.persistence.*;
 import org.hibernate.annotations.GenericGenerator;
 
 @Entity
 @Table(name = "grade")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "identifier")
 public class Grade {
     // ! Attributes
     // * Data
@@ -20,16 +24,17 @@ public class Grade {
 
     // * Relationships
     @ManyToOne
-    @JoinColumn(name = "course_id")
+    @JsonManagedReference
     private Course course;
 
     @ManyToOne
-    @JoinColumn(name = "student_id")
+    @JsonBackReference
     private Student student;
 
     // ! Constructors
     public Grade() {
     }
+
     public Grade(String id, Course course, Student student, Float value) {
         this.setIdentifier(id);
         this.setCourse(course);
@@ -49,12 +54,15 @@ public class Grade {
     public String getIdentifier() {
         return this.id;
     }
+
     public Course getCourse() {
         return this.course;
     }
+
     public Student getStudent() {
         return this.student;
     }
+
     public Float getValue() {
         return this.value;
     }
@@ -63,12 +71,15 @@ public class Grade {
     public void setIdentifier(String id) {
         this.id = id;
     }
+
     public void setCourse(Course course) {
         this.course = course;
     }
+
     public void setStudent(Student student) {
         this.student = student;
     }
+
     public void setValue(Float value) {
         this.value = value;
     }

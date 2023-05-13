@@ -1,12 +1,14 @@
 package edu.ucema.academics.models.users;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.ucema.academics.models.users.interfaces.IUser;
 import jakarta.persistence.*;
 import org.hibernate.annotations.GenericGenerator;
 
 @Entity
 @Table(name = "user")
-@Inheritance(strategy = InheritanceType.JOINED)
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "identifier")
 public class User implements IUser {
     // ! Attributes
     // * Data
@@ -59,7 +61,7 @@ public class User implements IUser {
     }
 
     public User(User user_instance) {
-        if(user_instance == null) return;
+        if (user_instance == null) return;
 
         this.setIdentifier(user_instance.getIdentifier());
         this.setFirstName(user_instance.getFirstName());
@@ -79,58 +81,84 @@ public class User implements IUser {
     public String getIdentifier() {
         return this.id;
     }
+
     public String getFirstName() {
         return this.firstName;
     }
+
     public String getLastName() {
         return this.lastName;
     }
+
     public String getName() {
         return this.name;
     }
+
     public String getVerifiedEmail() {
         return this.verifiedEmail;
     }
+
     public String getUnverifiedEmail() {
         return this.unverifiedEmail;
     }
+
     public String getEmailVerificationCode() {
         return this.emailVerificationCode;
     }
+
     public Password getPassword() {
         return this.password;
     }
-    public Professor getProfessorProfile() { return this.professorProfile; }
-    public Student getStudentProfile() { return this.studentProfile; }
+
+    public Professor getProfessorProfile() {
+        return this.professorProfile;
+    }
+
+    public Student getStudentProfile() {
+        return this.studentProfile;
+    }
 
 
     // * Setters
     public void setIdentifier(String user_id) {
         this.id = user_id;
     }
+
     public void setFirstName(String first_name) {
         this.firstName = first_name;
         this.setName();
     }
+
     public void setLastName(String last_name) {
         this.lastName = last_name;
         this.setName();
     }
+
     private void setName() {
         this.name = this.getFirstName() + " " + this.getLastName();
     }
+
     public void setVerifiedEmail(String verified_email) {
         this.verifiedEmail = verified_email;
     }
+
     public void setUnverifiedEmail(String unverified_email) {
         this.unverifiedEmail = unverified_email;
     }
+
     public void setEmailVerificationCode(String email_verification_code) {
         this.emailVerificationCode = email_verification_code;
     }
+
     public void setPassword(Password password_instance) {
         this.password = password_instance != null ? new Password(password_instance) : null;
     }
-    public void setProfessorProfile(Professor professor_profile) { this.professorProfile = professor_profile != null ? new Professor(professor_profile) : null; }
-    public void setStudentProfile(Student student_profile) { this.studentProfile = studentProfile != null ? new Student(student_profile) : null; }
+
+    public void setProfessorProfile(Professor professor_profile) {
+        this.professorProfile = professor_profile != null ? new Professor(professor_profile) : null;
+    }
+
+    public void setStudentProfile(Student student_profile) {
+        this.studentProfile = studentProfile != null ? new Student(student_profile) : null;
+    }
 }

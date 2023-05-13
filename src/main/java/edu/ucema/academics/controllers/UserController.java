@@ -79,8 +79,8 @@ public class UserController {
     @PutMapping(path = "/password")
     public ResponseEntity<?> changeUserPassword(@RequestParam String user_id, @RequestBody PasswordChangeDTO password_change) {
         try {
-            if(user_service.changePassword(user_id, password_change)) {
-                return ResponseEntity.status(200).body(new ClientResponseDTO("Password"));
+            if (user_service.changePassword(user_id, password_change)) {
+                return ResponseEntity.status(200).body(new ClientResponseDTO("Password was changed successfully"));
             } else {
                 return ResponseEntity.status(500).body(new ClientResponseDTO("Could not change the password. Please try again later."));
             }

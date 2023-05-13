@@ -1,32 +1,41 @@
 package edu.ucema.academics.models.users;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.ucema.academics.models.courses.Course;
 import edu.ucema.academics.models.courses.Grade;
 import jakarta.persistence.*;
-import org.hibernate.annotations.GenericGenerator;
 
 import java.util.List;
 
 @Entity
 @Table(name = "student")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "identifier")
 public final class Student {
     // ! Attributes
     // * Data
     @Id
-    @Column(name = "user_id")
+    @Column(name = "user_id", updatable = false, nullable = false)
     private String id;
 
     // * Relationships
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "student_to_course", joinColumns = @JoinColumn(name = "id_student"), inverseJoinColumns = @JoinColumn(name = "id_course"))
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "student_to_course",
+            joinColumns = @JoinColumn(name = "id_student", referencedColumnName = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "id_course", referencedColumnName = "id")
+    )
+    @JsonManagedReference
     private List<Course> courses;
 
-    @OneToMany(mappedBy = "student", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "student", fetch = FetchType.LAZY)
+    @JsonManagedReference
     private List<Grade> grades;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.EAGER)
     @MapsId
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 
     // ! Constructors
@@ -49,18 +58,38 @@ public final class Student {
 
     // ! Methods
     // * Getters
-    public String getIdentifier() { return this.id; }
+    public String getIdentifier() {
+        return this.id;
+    }
+
     public List<Course> getCourses() {
         return this.courses;
     }
-    public User getUser() { return this.user; }
-    public List<Grade> getGrades() { return this.grades; }
+
+    public User getUser() {
+        return this.user;
+    }
+
+    public List<Grade> getGrades() {
+        return this.grades;
+    }
 
     // * Setters
-    public void setIdentifier(String id) { this.id = id; }
+    public void setIdentifier(String id) {
+        this.id = id;
+    }
+
     public void setCourses(List<Course> courses) {
         this.courses = courses;
     }
-    public void setUser(User user) { this.user = new User(user); }
-    public void setGrades(List<Grade> grade_list) { this.grades = grade_list; }
+
+    public void setUser(User user) {
+        if (this.user != null && this.user.equals(user)) return;
+
+        this.user = user;
+    }
+
+    public void setGrades(List<Grade> grade_list) {
+        this.grades = grade_list;
+    }
 }

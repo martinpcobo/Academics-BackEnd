@@ -27,9 +27,6 @@ CREATE TABLE user(
 	email_verification_code VARCHAR(36) DEFAULT NULL
 );
 
-ALTER TABLE student ADD FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE;
-ALTER TABLE professor ADD FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE;
-
 CREATE TABLE course (
     id VARCHAR(36) NOT NULL,
     PRIMARY KEY (id),
@@ -52,6 +49,7 @@ CREATE TABLE class (
     subject_id VARCHAR(36),
     FOREIGN KEY (subject_id) REFERENCES subject(id) ON DELETE SET NULL
 );
+
 CREATE TABLE grade (
     id VARCHAR(36) NOT NULL,
     PRIMARY KEY (id),
@@ -61,22 +59,21 @@ CREATE TABLE grade (
     value FLOAT NOT NULL
 );
 
-
 # M2M Table Definition
 CREATE TABLE student_to_course (
-    id VARCHAR(36) ,
+    id BIGINT NOT NULL AUTO_INCREMENT,
     id_student VARCHAR(36),
     id_course VARCHAR(36),
     PRIMARY KEY(id),
-    FOREIGN KEY (id_student) REFERENCES academics_dev.student(user_id) ON DELETE SET NULL,
+    FOREIGN KEY (id_student) REFERENCES academics_dev.user(id) ON DELETE SET NULL,
     FOREIGN KEY (id_course) REFERENCES academics_dev.course(id) ON DELETE SET NULL
 );
 
 CREATE TABLE professor_to_course (
-    id VARCHAR(36) ,
-    id_professor VARCHAR(36),
-    id_course VARCHAR(36),
+    id BIGINT NOT NULL AUTO_INCREMENT,
     PRIMARY KEY(id),
-    FOREIGN KEY (id_professor) REFERENCES academics_dev.professor(user_id) ON DELETE SET NULL,
-    FOREIGN KEY (id_course) REFERENCES academics_dev.course(id) ON DELETE SET NULL
+    id_professor VARCHAR(36),
+    FOREIGN KEY (id_professor) REFERENCES user(id) ON DELETE SET NULL,
+    id_course VARCHAR(36),
+    FOREIGN KEY (id_course) REFERENCES course(id) ON DELETE SET NULL
 );
