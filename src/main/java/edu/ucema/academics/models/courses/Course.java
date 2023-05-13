@@ -1,7 +1,7 @@
 package edu.ucema.academics.models.courses;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.ucema.academics.models.users.Professor;
 import edu.ucema.academics.models.users.Student;
@@ -14,7 +14,7 @@ import java.util.List;
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "identifier")
-public abstract class Course {
+public class Course {
     // ! Attributes
     // * Data
     @Id
@@ -35,20 +35,20 @@ public abstract class Course {
 
     // * Relationships
     @ManyToMany(mappedBy = "courses", fetch = FetchType.LAZY)
-    @JsonBackReference
+    @JsonIdentityReference(alwaysAsId = true)
     private List<Professor> professors;
     @ManyToMany(mappedBy = "courses", fetch = FetchType.LAZY)
-    @JsonBackReference
+    @JsonIdentityReference(alwaysAsId = true)
     private List<Student> students;
     @OneToMany(mappedBy = "course", fetch = FetchType.LAZY)
-    @JsonBackReference
+    @JsonIdentityReference(alwaysAsId = true)
     private List<Grade> grades;
 
     // ! Constructors
     public Course() {
     }
 
-    public Course(String course_id, List<Student> students_list, List<Professor> professors_list, Date course_start_date, Date course_end_date, String course_name, String course_description) {
+    public Course(String course_id, List<Student> students_list, List<Professor> professors_list, Date course_start_date, Date course_end_date, String course_name, String course_description, List<Grade> grades_list) {
         this.setIdentifier(course_id);
         this.setStudents(students_list);
         this.setProfessors(professors_list);
@@ -56,6 +56,7 @@ public abstract class Course {
         this.setEndDate(course_end_date);
         this.setName(course_name);
         this.setDescription(course_description);
+        this.setGrades(grades_list);
     }
 
     public Course(Course course_instance) {
@@ -66,6 +67,7 @@ public abstract class Course {
         this.setStartDate(course_instance.getStartDate());
         this.setDescription(course_instance.getDescription());
         this.setName(course_instance.getName());
+        this.setGrades(course_instance.getGrades());
     }
 
     // ! Methods
@@ -98,6 +100,10 @@ public abstract class Course {
         return this.students;
     }
 
+    public List<Grade> getGrades() {
+        return this.grades;
+    }
+
     // * Setters
     public void setIdentifier(String course_id) {
         this.id = course_id;
@@ -127,5 +133,10 @@ public abstract class Course {
     public void setStudents(List<Student> student_list) {
         if (this.students != null && this.students.equals(student_list)) return;
         this.students = student_list;
+    }
+
+    public void setGrades(List<Grade> grade_list) {
+        if (this.grades != null && this.grades.equals(grade_list)) return;
+        this.grades = grade_list;
     }
 }

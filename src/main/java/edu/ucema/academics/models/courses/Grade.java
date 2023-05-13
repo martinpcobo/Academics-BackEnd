@@ -1,8 +1,7 @@
 package edu.ucema.academics.models.courses;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.ucema.academics.models.users.Student;
 import jakarta.persistence.*;
@@ -24,11 +23,13 @@ public class Grade {
 
     // * Relationships
     @ManyToOne
-    @JsonManagedReference
+    @JoinColumn(name = "course_id", referencedColumnName = "id")
+    @JsonIdentityReference(alwaysAsId = true)
     private Course course;
 
     @ManyToOne
-    @JsonBackReference
+    @JoinColumn(name = "student_id", referencedColumnName = "user_id")
+    @JsonIdentityReference(alwaysAsId = true)
     private Student student;
 
     // ! Constructors

@@ -54,8 +54,11 @@ CREATE TABLE grade (
     id VARCHAR(36) NOT NULL,
     PRIMARY KEY (id),
 
+
     course_id VARCHAR(36) NOT NULL,
+    FOREIGN KEY (course_id) REFERENCES course(id) ON DELETE CASCADE,
     student_id VARCHAR(36) NOT NULL,
+    FOREIGN KEY (student_id) REFERENCES student(user_id) ON DELETE CASCADE,
     value FLOAT NOT NULL
 );
 

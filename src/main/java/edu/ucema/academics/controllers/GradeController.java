@@ -19,7 +19,7 @@ public class GradeController {
     private GradeService grade_service;
 
     // ! Business Logic
-    // Record a Grade
+    // * Record a Grade
     @PostMapping(path = "/")
     public ResponseEntity<?> recordGrade(@RequestBody Grade grade_instance) {
         try {
@@ -29,7 +29,7 @@ public class GradeController {
         }
     }
 
-    // Get Grade by Id
+    // * Get Grade by Id
     @GetMapping(path = "/{grade_id}")
     public ResponseEntity<?> getGradeById(@PathVariable String grade_id) {
         try {
@@ -39,7 +39,7 @@ public class GradeController {
         }
     }
 
-    // Delete a Grade
+    // * Delete a Grade
     @DeleteMapping(path = "/{grade_id}")
     public ResponseEntity<?> deleteClass(@PathVariable String grade_id) {
         try {
@@ -53,7 +53,7 @@ public class GradeController {
         }
     }
 
-    // Update Grade Details
+    // * Update Grade Details
     @PutMapping(path = "/")
     public ResponseEntity<?> modifyGrade(@RequestBody Grade grade_instance) {
         try {

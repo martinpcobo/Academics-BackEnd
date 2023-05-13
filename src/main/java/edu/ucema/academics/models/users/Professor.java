@@ -1,7 +1,6 @@
 package edu.ucema.academics.models.users;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.ucema.academics.models.courses.Course;
 import jakarta.persistence.*;
@@ -26,7 +25,6 @@ public final class Professor {
             joinColumns = @JoinColumn(name = "id_professor", referencedColumnName = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "id_course", referencedColumnName = "id")
     )
-    @JsonManagedReference
     private List<Course> courses;
 
     @OneToOne(fetch = FetchType.EAGER)

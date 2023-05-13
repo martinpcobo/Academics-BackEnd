@@ -16,7 +16,7 @@ import java.util.List;
         methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE}
 )
 public class ClassController {
-    // ! Injected Services
+    // ! Injected Dependencies
     @Autowired
     private ClassService class_service;
 
