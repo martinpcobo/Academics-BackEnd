@@ -6,6 +6,8 @@ import edu.ucema.academics.models.users.User;
 import edu.ucema.academics.repositories.PasswordRepository;
 import edu.ucema.academics.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -33,7 +35,7 @@ public class UserService {
     // ! Business Logic
 
     // * Create a User
-    public User createUser(User user) {
+    public ResponseEntity<User> createUser(User user) {
         User new_user = new User(user);
         new_user.setPassword(null);
 
@@ -43,50 +45,54 @@ public class UserService {
         Password new_password = new Password(user.getPassword());
         db_user.setPassword(password_repository.save(new_password));
 
-        return this._getSecureUser(user_repository.save(db_user));
+        return ResponseEntity.status(HttpStatus.OK).body(this._getSecureUser(user_repository.save(db_user)));
     }
 
     // * Delete a User
-    public Boolean deleteUser(String user_id) throws Exception {
+    public ResponseEntity<?> deleteUser(String user_id) throws Exception {
         Optional<User> opt_db_user = user_repository.findById(user_id);
         if (opt_db_user.isPresent()) {
             user_repository.delete(opt_db_user.get());
-            return user_repository.findById(user_id).isEmpty();
+            if (user_repository.findById(user_id).isEmpty()) {
+                return ResponseEntity.status(HttpStatus.OK).body("The selected User was deleted successfully.");
+            } else {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("The selected User could not be deleted. Please try again later");
+            }
         } else {
-            throw new Exception("Could not find the User.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("The selected User could not be found. Please try again later");
         }
     }
 
     // * Update User Details by Id
-    public User modifyUserName(String user_id, User user) throws Exception {
+    public ResponseEntity<?> modifyUserName(String user_id, User user) throws Exception {
         Optional<User> opt_db_user = user_repository.findById(user_id);
         if (opt_db_user.isPresent()) {
             User db_user = opt_db_user.get();
             db_user.setLastName(user.getLastName());
             db_user.setFirstName(user.getFirstName());
 
-            return this._getSecureUser(user_repository.save(db_user));
+            return ResponseEntity.status(HttpStatus.OK).body(this._getSecureUser(user_repository.save(db_user)));
         } else {
-            throw new Exception("User not found.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("The selected User could not be found. Please try again later");
         }
     }
 
     // * Update User Email by Id
-    public User modifyUserEmail(String user_id, User user) throws Exception {
+    public ResponseEntity<?> modifyUserEmail(String user_id, User user) throws Exception {
         Optional<User> opt_db_user = user_repository.findById(user_id);
         if (opt_db_user.isPresent()) {
             User db_user = opt_db_user.get();
             db_user.setUnverifiedEmail(user.getUnverifiedEmail());
             db_user.setEmailVerificationCode(UUID.randomUUID().toString());
 
-            return this._getSecureUser(user_repository.save(db_user));
+            return ResponseEntity.status(HttpStatus.OK).body(this._getSecureUser(user_repository.save(db_user)));
         } else {
-            throw new Exception("User not found.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("The selected User could not be found. Please try again later");
         }
     }
 
     // * Verify User Email by Id
-    public User verifyUserEmail(String user_id, String email_verification_code) throws Exception {
+    public ResponseEntity<?> verifyUserEmail(String user_id, String email_verification_code) throws Exception {
         Optional<User> opt_db_user = user_repository.findById(user_id);
         if (opt_db_user.isPresent()) {
             User db_user = opt_db_user.get();
@@ -96,30 +102,29 @@ public class UserService {
                 db_user.setUnverifiedEmail(null);
                 db_user.setEmailVerificationCode(null);
 
-                return this._getSecureUser(user_repository.save(db_user));
+                return ResponseEntity.status(HttpStatus.OK).body(this._getSecureUser(user_repository.save(db_user)));
             } else {
-                throw new Exception("Email verification code not valid.");
+                return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("The provided email verification code is not correct. Please try again later.");
             }
         } else {
-            throw new Exception("User not found.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("The selected User could not be found. Please try again later");
         }
     }
 
     // * Change User Password
-    public Boolean changePassword(String user_id, PasswordChangeDTO password_change) throws Exception {
+    public ResponseEntity<?> changePassword(String user_id, PasswordChangeDTO password_change) throws Exception {
         Optional<User> opt_db_user = user_repository.findById(user_id);
         if (opt_db_user.isPresent()) {
             User db_user = opt_db_user.get();
 
             if (db_user.getPassword().getPassword().equals(password_change.getOldPassword())) {
                 db_user.getPassword().setPassword(password_change.getNewPassword());
-                user_repository.save(db_user);
-                return true;
+                return ResponseEntity.status(HttpStatus.OK).body(this._getSecureUser(user_repository.save(db_user)));
             } else {
-                throw new Exception("Incorrect password");
+                return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("The provided password was incorrect. Please try again later");
             }
         } else {
-            throw new Exception("User not found.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("The selected User could not be found. Please try again later");
         }
     }
 }

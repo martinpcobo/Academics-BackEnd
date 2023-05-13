@@ -1,9 +1,9 @@
 package edu.ucema.academics.controllers;
 
 import edu.ucema.academics.models.courses.Class;
-import edu.ucema.academics.models.dtos.ClientResponseDTO;
 import edu.ucema.academics.services.ClassService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,9 +25,9 @@ public class ClassController {
     @PostMapping(path = "/")
     public ResponseEntity<?> createClass(@RequestBody Class class_instance) {
         try {
-            return ResponseEntity.status(200).body(class_service.createClass(class_instance));
+            return class_service.createClass(class_instance);
         } catch (Exception e) {
-            return ResponseEntity.status(500).body(e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
         }
     }
 
@@ -35,9 +35,9 @@ public class ClassController {
     @GetMapping(path = "/{class_id}")
     public ResponseEntity<?> getClassById(@PathVariable String class_id) {
         try {
-            return ResponseEntity.status(200).body(class_service.getClassById(class_id));
+            return class_service.getClassById(class_id);
         } catch (Exception e) {
-            return ResponseEntity.status(500).body(e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
         }
     }
 
@@ -45,13 +45,9 @@ public class ClassController {
     @DeleteMapping(path = "/{class_id}")
     public ResponseEntity<?> deleteClass(@PathVariable String class_id) {
         try {
-            if (class_service.deleteClass(class_id)) {
-                return ResponseEntity.status(200).body(new ClientResponseDTO("Selected Class was deleted successfully."));
-            } else {
-                return ResponseEntity.status(500).body(new ClientResponseDTO("Selected Class could not be deleted. Please try again later."));
-            }
+            return class_service.deleteClass(class_id);
         } catch (Exception e) {
-            return ResponseEntity.status(500).body(e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
         }
     }
 
@@ -59,9 +55,9 @@ public class ClassController {
     @PutMapping(path = "/")
     public ResponseEntity<?> modifyClassDetails(@RequestBody Class class_instance) {
         try {
-            return ResponseEntity.status(200).body(class_service.modifyClassDetails(class_instance));
+            return class_service.modifyClassDetails(class_instance);
         } catch (Exception e) {
-            return ResponseEntity.status(500).body(e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
         }
     }
 
@@ -69,9 +65,9 @@ public class ClassController {
     @PutMapping(path = "/{class_id}/professors")
     public ResponseEntity<?> modifyClassProfessors(@PathVariable String class_id, @RequestBody List<String> professors_ids) {
         try {
-            return ResponseEntity.status(200).body(class_service.setClassProfessors(class_id, professors_ids));
+            return class_service.setClassProfessors(class_id, professors_ids);
         } catch (Exception e) {
-            return ResponseEntity.status(500).body(e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
         }
     }
 
@@ -79,9 +75,9 @@ public class ClassController {
     @PutMapping(path = "/{class_id}/students")
     public ResponseEntity<?> modifyClassStudents(@PathVariable String class_id, @RequestBody List<String> student_ids) {
         try {
-            return ResponseEntity.status(200).body(class_service.setClassStudents(class_id, student_ids));
+            return class_service.setClassStudents(class_id, student_ids);
         } catch (Exception e) {
-            return ResponseEntity.status(500).body(e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
         }
     }
 }

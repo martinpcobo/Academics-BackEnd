@@ -7,6 +7,8 @@ import edu.ucema.academics.repositories.ClassRepository;
 import edu.ucema.academics.repositories.ProfessorRepository;
 import edu.ucema.academics.repositories.StudentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,27 +33,31 @@ public class ClassService {
     // ! Business Logic
 
     // * Create a Class
-    public Class createClass(Class class_instance) throws Exception {
-        return class_repository.save(new Class(class_instance));
+    public ResponseEntity<Class> createClass(Class class_instance) throws Exception {
+        return ResponseEntity.status(200).body(class_repository.save(new Class(class_instance)));
     }
 
     // * Get Class by Id
-    public Class getClassById(String class_id) throws Exception {
+    public ResponseEntity<?> getClassById(String class_id) throws Exception {
         Optional<Class> opt_db_class = class_repository.findById(class_id);
         if (opt_db_class.isPresent()) {
-            return opt_db_class.get();
+            return ResponseEntity.status(HttpStatus.OK).body(opt_db_class.get());
         } else {
-            throw new Exception("Could not find the Class to be modified.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Could not find the selected Class.");
         }
     }
 
     // * Delete a Class
-    public Boolean deleteClass(String class_id) throws Exception {
+    public ResponseEntity<?> deleteClass(String class_id) throws Exception {
         Optional<Class> opt_db_class = class_repository.findById(class_id);
         if (opt_db_class.isPresent()) {
             class_repository.delete(opt_db_class.get());
 
-            return class_repository.findById(class_id).isEmpty();
+            if (class_repository.findById(class_id).isEmpty()) {
+                return ResponseEntity.status(HttpStatus.OK).body("The selected Class was deleted.");
+            } else {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("The selected Class could not be deleted. Please try again later.");
+            }
         } else {
             throw new Exception("Could not find the Class to be deleted.");
         }
@@ -59,7 +65,7 @@ public class ClassService {
 
     // * Update the details of a Class
     @Transactional
-    public Class modifyClassDetails(Class class_instance) throws Exception {
+    public ResponseEntity<?> modifyClassDetails(Class class_instance) throws Exception {
         Optional<Class> opt_db_class = class_repository.findById(class_instance.getIdentifier());
         if (opt_db_class.isPresent()) {
             Class db_class = opt_db_class.get();
@@ -70,15 +76,15 @@ public class ClassService {
             db_class.setStartDate(class_instance.getStartDate());
             db_class.setSubject(class_instance.getSubject());
 
-            return class_repository.save(db_class);
+            return ResponseEntity.status(HttpStatus.OK).body(class_repository.save(db_class));
         } else {
-            throw new Exception("Could not find the Class to be modified.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("The selected Class could not be found. Please try again later.");
         }
     }
 
     // * Modify the Professors of a Class
     @Transactional
-    public Class setClassProfessors(String class_id, List<String> professors_ids) throws Exception {
+    public ResponseEntity<?> setClassProfessors(String class_id, List<String> professors_ids) throws Exception {
         Optional<Class> opt_db_class = class_repository.findById(class_id);
         if (opt_db_class.isPresent()) {
             Class db_class = opt_db_class.get();
@@ -105,15 +111,15 @@ public class ClassService {
 
             db_class.setProfessors(professors_list);
 
-            return class_repository.save(db_class);
+            return ResponseEntity.status(HttpStatus.OK).body(class_repository.save(db_class));
         } else {
-            throw new Exception("Could not find the Class to be modified.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("The selected Class could not be found. Please try again later.");
         }
     }
 
     // * Modify the Students of a Class
     @Transactional
-    public Class setClassStudents(String class_id, List<String> student_ids) throws Exception {
+    public ResponseEntity<?> setClassStudents(String class_id, List<String> student_ids) throws Exception {
         Optional<Class> opt_db_class = class_repository.findById(class_id);
         if (opt_db_class.isPresent()) {
             Class db_class = opt_db_class.get();
@@ -140,9 +146,9 @@ public class ClassService {
 
             db_class.setStudents(student_list);
 
-            return class_repository.save(db_class);
+            return ResponseEntity.status(HttpStatus.OK).body(class_repository.save(db_class));
         } else {
-            throw new Exception("Could not find the Class to be modified.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("The selected Class could not be found. Please try again later.");
         }
     }
 }

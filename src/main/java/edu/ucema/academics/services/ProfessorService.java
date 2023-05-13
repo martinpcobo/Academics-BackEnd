@@ -6,6 +6,8 @@ import edu.ucema.academics.repositories.ClassRepository;
 import edu.ucema.academics.repositories.ProfessorRepository;
 import edu.ucema.academics.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,39 +30,43 @@ public class ProfessorService {
     // ! Business Logic
     // * Create a Professor Profile
     @Transactional
-    public Professor subscribeProfessor(String user_id) throws Exception {
+    public ResponseEntity<?> subscribeProfessor(String user_id) throws Exception {
         Optional<User> opt_db_user = user_repository.findById(user_id);
         if (opt_db_user.isPresent()) {
             Professor new_professor = new Professor();
             new_professor.setCourses(null);
             new_professor.setUser(opt_db_user.get());
 
-            return this.professor_repository.save(new_professor);
+            return ResponseEntity.status(HttpStatus.OK).body(this.professor_repository.save(new_professor));
         } else {
-            throw new Exception("User not found.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("The selected User could not be found. Plase try again later.");
         }
     }
 
     // * Get Professor Profile
     @Transactional
-    public Professor getProfessorById(String prof_id) throws Exception {
+    public ResponseEntity<?> getProfessorById(String prof_id) throws Exception {
         Optional<Professor> opt_db_prof = professor_repository.findById(prof_id);
         if (opt_db_prof.isPresent()) {
-            return opt_db_prof.get();
+            return ResponseEntity.status(HttpStatus.OK).body(opt_db_prof.get());
         } else {
-            throw new Exception("Professor not found.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("The selected Professor could not be found. Plase try again later.");
         }
     }
 
     // * Delete a Professor Profile
     @Transactional
-    public boolean deleteProfessor(String professor_id) throws Exception {
+    public ResponseEntity<?> deleteProfessor(String professor_id) throws Exception {
         Optional<Professor> opt_db_professor = professor_repository.findById(professor_id);
         if (opt_db_professor.isPresent()) {
             this.professor_repository.delete(opt_db_professor.get());
-            return !this.professor_repository.existsById(professor_id);
+            if (!this.professor_repository.existsById(professor_id)) {
+                return ResponseEntity.status(HttpStatus.OK).body("The selected Professor was deleted successfully.");
+            } else {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("The selected Professor could not be deleted. Please try again later.");
+            }
         } else {
-            throw new Exception("Professor not found.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("The selected Professor could not be found. Plase try again later.");
         }
     }
 }

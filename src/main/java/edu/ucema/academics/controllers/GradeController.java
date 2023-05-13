@@ -1,9 +1,9 @@
 package edu.ucema.academics.controllers;
 
 import edu.ucema.academics.models.courses.Grade;
-import edu.ucema.academics.models.dtos.ClientResponseDTO;
 import edu.ucema.academics.services.GradeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,9 +23,9 @@ public class GradeController {
     @PostMapping(path = "/")
     public ResponseEntity<?> recordGrade(@RequestBody Grade grade_instance) {
         try {
-            return ResponseEntity.status(200).body(grade_service.recordGrade(grade_instance));
+            return grade_service.recordGrade(grade_instance);
         } catch (Exception e) {
-            return ResponseEntity.status(500).body(e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
         }
     }
 
@@ -33,9 +33,9 @@ public class GradeController {
     @GetMapping(path = "/{grade_id}")
     public ResponseEntity<?> getGradeById(@PathVariable String grade_id) {
         try {
-            return ResponseEntity.status(200).body(grade_service.getGradeById(grade_id));
+            return grade_service.getGradeById(grade_id);
         } catch (Exception e) {
-            return ResponseEntity.status(500).body(e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
         }
     }
 
@@ -43,13 +43,9 @@ public class GradeController {
     @DeleteMapping(path = "/{grade_id}")
     public ResponseEntity<?> deleteClass(@PathVariable String grade_id) {
         try {
-            if (grade_service.deleteGrade(grade_id)) {
-                return ResponseEntity.status(200).body(new ClientResponseDTO("Selected Grade was deleted successfully."));
-            } else {
-                return ResponseEntity.status(500).body(new ClientResponseDTO("Selected Grade could not be deleted. Please try again later."));
-            }
+            return grade_service.deleteGrade(grade_id);
         } catch (Exception e) {
-            return ResponseEntity.status(500).body(e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
         }
     }
 
@@ -57,9 +53,9 @@ public class GradeController {
     @PutMapping(path = "/")
     public ResponseEntity<?> modifyGrade(@RequestBody Grade grade_instance) {
         try {
-            return ResponseEntity.status(200).body(grade_service.modifyGrade(grade_instance));
+            return grade_service.modifyGrade(grade_instance);
         } catch (Exception e) {
-            return ResponseEntity.status(500).body(e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
         }
     }
 }

@@ -1,10 +1,10 @@
 package edu.ucema.academics.controllers;
 
-import edu.ucema.academics.models.dtos.ClientResponseDTO;
 import edu.ucema.academics.models.dtos.PasswordChangeDTO;
 import edu.ucema.academics.models.users.User;
 import edu.ucema.academics.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,9 +25,9 @@ public class UserController {
     @PostMapping(path = "/")
     public ResponseEntity<?> createUser(@RequestBody User user) {
         try {
-            return ResponseEntity.status(200).body(user_service.createUser(user));
+            return user_service.createUser(user);
         } catch (Exception e) {
-            return ResponseEntity.status(500).body(e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
         }
     }
 
@@ -35,13 +35,9 @@ public class UserController {
     @DeleteMapping(path = "/{user_id}")
     public ResponseEntity<?> deleteUser(@PathVariable String user_id) {
         try {
-            if (user_service.deleteUser(user_id)) {
-                return ResponseEntity.status(200).body(new ClientResponseDTO("User was deleted successfully"));
-            } else {
-                return ResponseEntity.status(500).body(new ClientResponseDTO("An internal error took place while trying to delete the requested user. Please try again later."));
-            }
+            return user_service.deleteUser(user_id);
         } catch (Exception e) {
-            return ResponseEntity.status(500).body(e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
         }
     }
 
@@ -49,9 +45,9 @@ public class UserController {
     @PutMapping(path = "/name")
     public ResponseEntity<?> modifyUserName(@RequestParam(required = true) String user_id, @RequestBody User user) {
         try {
-            return ResponseEntity.status(200).body(user_service.modifyUserName(user_id, user));
+            return user_service.modifyUserName(user_id, user);
         } catch (Exception e) {
-            return ResponseEntity.status(500).body(e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
         }
     }
 
@@ -59,7 +55,7 @@ public class UserController {
     @PutMapping(path = "/email")
     public ResponseEntity<?> modifyUserEmail(@RequestParam(required = true) String user_id, @RequestBody User user) {
         try {
-            return ResponseEntity.status(200).body(user_service.modifyUserEmail(user_id, user));
+            return user_service.modifyUserEmail(user_id, user);
         } catch (Exception e) {
             return ResponseEntity.status(500).body(e);
         }
@@ -69,9 +65,9 @@ public class UserController {
     @PostMapping(path = "/email/verify")
     public ResponseEntity<?> verifyUserEmail(@RequestParam(required = true) String user_id, @RequestParam(required = true) String email_verification_code) {
         try {
-            return ResponseEntity.status(200).body(user_service.verifyUserEmail(user_id, email_verification_code));
+            return user_service.verifyUserEmail(user_id, email_verification_code);
         } catch (Exception e) {
-            return ResponseEntity.status(500).body(e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
         }
     }
 
@@ -79,13 +75,9 @@ public class UserController {
     @PutMapping(path = "/password")
     public ResponseEntity<?> changeUserPassword(@RequestParam String user_id, @RequestBody PasswordChangeDTO password_change) {
         try {
-            if (user_service.changePassword(user_id, password_change)) {
-                return ResponseEntity.status(200).body(new ClientResponseDTO("Password was changed successfully"));
-            } else {
-                return ResponseEntity.status(500).body(new ClientResponseDTO("Could not change the password. Please try again later."));
-            }
+            return user_service.changePassword(user_id, password_change);
         } catch (Exception e) {
-            return ResponseEntity.status(500).body(e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
         }
     }
 }

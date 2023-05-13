@@ -7,6 +7,8 @@ import edu.ucema.academics.models.users.User;
 import edu.ucema.academics.repositories.StudentRepository;
 import edu.ucema.academics.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,7 +31,7 @@ public class StudentService {
 
     // * Create a Student Profile
     @Transactional
-    public Student subscribeUser(String user_id) throws Exception {
+    public ResponseEntity<?> subscribeUser(String user_id) throws Exception {
         Optional<User> opt_db_user = user_repository.findById(user_id);
         if (opt_db_user.isPresent()) {
             Student new_student = new Student();
@@ -37,32 +39,36 @@ public class StudentService {
             new_student.setGrades(new ArrayList<Grade>());
             new_student.setUser(opt_db_user.get());
 
-            return this.student_repository.save(new_student);
+            return ResponseEntity.status(HttpStatus.OK).body(this.student_repository.save(new_student));
         } else {
-            throw new Exception("User not found.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("The selected User could not be found. Please try again later.");
         }
     }
 
     // * Get Student Information
-    public Student getStudentById(String student_id) throws Exception {
+    public ResponseEntity<?> getStudentById(String student_id) throws Exception {
         Optional<Student> opt_db_student = student_repository.findById(student_id);
         if (opt_db_student.isPresent()) {
-            return opt_db_student.get();
+            return ResponseEntity.status(HttpStatus.OK).body(opt_db_student.get());
         } else {
-            throw new Exception("User not found.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("The selected Student could not be found. Please try again later.");
         }
     }
 
     // * Delete Student Profile
-    public Boolean deleteStudentById(String student_id) throws Exception {
+    public ResponseEntity<?> deleteStudentById(String student_id) throws Exception {
         Optional<Student> opt_db_student = student_repository.findById(student_id);
         if (opt_db_student.isPresent()) {
             Student db_student = opt_db_student.get();
             student_repository.delete(db_student);
 
-            return student_repository.findById(student_id).isEmpty();
+            if (student_repository.findById(student_id).isEmpty()) {
+                return ResponseEntity.status(HttpStatus.OK).body("The selected User was deleted successfully.");
+            } else {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("The selected Student could not be deleted. Please try again later.");
+            }
         } else {
-            throw new Exception("Student not found.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("The selected Student could not be found. Please try again later.");
         }
     }
 }

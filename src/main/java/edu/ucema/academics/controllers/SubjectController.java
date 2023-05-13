@@ -1,9 +1,9 @@
 package edu.ucema.academics.controllers;
 
 import edu.ucema.academics.models.Subject;
-import edu.ucema.academics.models.dtos.ClientResponseDTO;
 import edu.ucema.academics.services.SubjectService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,9 +27,9 @@ public class SubjectController {
     @PostMapping(path = "/")
     public ResponseEntity<?> createSubject(@RequestBody Subject subject_instance) {
         try {
-            return ResponseEntity.status(200).body(subject_service.createSubject(subject_instance));
+            return subject_service.createSubject(subject_instance);
         } catch (Exception e) {
-            return ResponseEntity.status(500).body(e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
         }
     }
 
@@ -37,13 +37,9 @@ public class SubjectController {
     @DeleteMapping(path = "/{subject_id}")
     public ResponseEntity<?> deleteSubject(@PathVariable String subject_id) {
         try {
-            if (subject_service.deleteSubject(subject_id)) {
-                return ResponseEntity.status(200).body(new ClientResponseDTO("The selected Class was deleted successfully."));
-            } else {
-                return ResponseEntity.status(500).body(new ClientResponseDTO("The selected Class could not be deleted. Please try again later."));
-            }
+            return subject_service.deleteSubject(subject_id);
         } catch (Exception e) {
-            return ResponseEntity.status(500).body(e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
         }
     }
 
@@ -51,9 +47,9 @@ public class SubjectController {
     @PutMapping(path = "/")
     public ResponseEntity<?> modifySubject(@RequestBody Subject subject_instance) {
         try {
-            return ResponseEntity.status(200).body(subject_service.modifySubject(subject_instance));
+            return subject_service.modifySubject(subject_instance);
         } catch (Exception e) {
-            return ResponseEntity.status(500).body(e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
         }
     }
 
@@ -61,9 +57,9 @@ public class SubjectController {
     @GetMapping(path = "/{subject_id}")
     public ResponseEntity<?> modifySubject(@PathVariable String subject_id) {
         try {
-            return ResponseEntity.status(200).body(subject_service.getSubjectById(subject_id));
+            return subject_service.getSubjectById(subject_id);
         } catch (Exception e) {
-            return ResponseEntity.status(500).body(e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
         }
     }
 

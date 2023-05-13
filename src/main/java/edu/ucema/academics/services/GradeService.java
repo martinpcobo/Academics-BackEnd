@@ -3,6 +3,8 @@ package edu.ucema.academics.services;
 import edu.ucema.academics.models.courses.Grade;
 import edu.ucema.academics.repositories.GradeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -19,40 +21,44 @@ public class GradeService {
 
     // ! Business Logic
     // * Record new Grade
-    public Grade recordGrade(Grade grade_instance) {
-        return this.grade_repository.save(new Grade(grade_instance));
+    public ResponseEntity<?> recordGrade(Grade grade_instance) {
+        return ResponseEntity.status(HttpStatus.OK).body(this.grade_repository.save(new Grade(grade_instance)));
     }
 
     // * Get Grade By Id
-    public Grade getGradeById(String grade_id) throws Exception {
+    public ResponseEntity<?> getGradeById(String grade_id) throws Exception {
         Optional<Grade> opt_db_grade = grade_repository.findById(grade_id);
         if (opt_db_grade.isPresent()) {
-            return opt_db_grade.get();
+            return ResponseEntity.status(HttpStatus.OK).body(opt_db_grade.get());
         } else {
-            throw new Exception("Selected Grade could not be found. Please try again later. ");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("The selected Grade could not be found. Please try again later.");
         }
     }
 
     // * Modify a Grade
-    public Grade modifyGrade(Grade grade_instance) throws Exception {
+    public ResponseEntity<?> modifyGrade(Grade grade_instance) throws Exception {
         Optional<Grade> opt_db_grade = grade_repository.findById(grade_instance.getIdentifier());
         if (opt_db_grade.isPresent()) {
             Grade db_grade = opt_db_grade.get();
             db_grade.setValue(grade_instance.getValue());
-            return grade_repository.save(db_grade);
+            return ResponseEntity.status(HttpStatus.OK).body(grade_repository.save(db_grade));
         } else {
-            throw new Exception("Selected Grade could not be found. Please try again later. ");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("The selected Grade could not be found. Please try again later.");
         }
     }
 
     // * Delete a Grade
-    public Boolean deleteGrade(String grade_id) throws Exception {
+    public ResponseEntity<?> deleteGrade(String grade_id) throws Exception {
         Optional<Grade> opt_db_grade = grade_repository.findById(grade_id);
         if (opt_db_grade.isPresent()) {
             grade_repository.delete(opt_db_grade.get());
-            return !grade_repository.existsById(grade_id);
+            if (!grade_repository.existsById(grade_id)) {
+                return ResponseEntity.status(HttpStatus.OK).body("The selected Grade was deleted successfully.");
+            } else {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("The selected Grade could not be deleted. Please try again later.");
+            }
         } else {
-            throw new Exception("Selected Grade could not be found. Please try again later. ");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("The selected Grade could not be found. Please try again later.");
         }
     }
 }
