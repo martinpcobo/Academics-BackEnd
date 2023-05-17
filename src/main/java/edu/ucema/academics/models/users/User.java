@@ -2,14 +2,13 @@ package edu.ucema.academics.models.users;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import edu.ucema.academics.models.users.interfaces.IUser;
 import jakarta.persistence.*;
 import org.hibernate.annotations.GenericGenerator;
 
 @Entity
 @Table(name = "user")
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "identifier")
-public class User implements IUser {
+public class User {
     // ! Attributes
     // * Data
     @Id
