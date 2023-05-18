@@ -21,10 +21,6 @@ public class UserService {
     @Autowired
     private PasswordRepository password_repository;
 
-    // ! Constructors
-    public UserService() {
-    }
-
     // ! Methods
     // * Get Secure User
     private User _getSecureUser(User user) {
