@@ -8,6 +8,7 @@ import edu.ucema.academics.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -20,11 +21,13 @@ public class UserService {
     private UserRepository user_repository;
     @Autowired
     private PasswordRepository password_repository;
+    @Autowired
+    private PasswordEncoder password_encoder;
 
     // ! Methods
     // * Get Secure User
     private User _getSecureUser(User user) {
-        user.setPassword(null);
+        user.setPasswordInstance(null);
         return user;
     }
 
@@ -33,13 +36,14 @@ public class UserService {
     // * Create a User
     public ResponseEntity<User> createUser(User user) {
         User new_user = new User(user);
-        new_user.setPassword(null);
+        new_user.setPasswordInstance(null);
 
         User db_user = user_repository.save(new_user);
 
         // Set the User's Password
-        Password new_password = new Password(user.getPassword());
-        db_user.setPassword(password_repository.save(new_password));
+        Password new_password = new Password();
+        new_password.setPassword(password_encoder.encode(user.getPasswordInstance().getPassword()));
+        db_user.setPasswordInstance(password_repository.save(new_password));
 
         return ResponseEntity.status(HttpStatus.OK).body(this._getSecureUser(user_repository.save(db_user)));
     }
@@ -113,8 +117,8 @@ public class UserService {
         if (opt_db_user.isPresent()) {
             User db_user = opt_db_user.get();
 
-            if (db_user.getPassword().getPassword().equals(password_change.getOldPassword())) {
-                db_user.getPassword().setPassword(password_change.getNewPassword());
+            if (db_user.getPasswordInstance().getPassword().equals(password_change.getOldPassword())) {
+                db_user.getPasswordInstance().setPassword(password_change.getNewPassword());
                 return ResponseEntity.status(HttpStatus.OK).body(this._getSecureUser(user_repository.save(db_user)));
             } else {
                 return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("The provided password was incorrect. Please try again later");

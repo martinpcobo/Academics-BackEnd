@@ -21,14 +21,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private JwtUtilities jwtUtilities;
 
     @Autowired
-    private UserDetailsService userDetailsService;
+    private UserDetailsService user_details_service;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String token = jwtUtilities.getToken(request);
         if (token != null && jwtUtilities.validateToken(token)) {
             String username = jwtUtilities.extractUsername(token);
-            UserDetails user = userDetailsService.loadUserByUsername(username);
+            UserDetails user = user_details_service.loadUserByUsername(username);
 
             if (user != null) {
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(user.getUsername(), null, user.getAuthorities());

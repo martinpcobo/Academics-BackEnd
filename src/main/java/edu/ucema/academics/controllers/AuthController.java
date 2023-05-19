@@ -18,8 +18,4 @@ public class AuthController {
         return this.authentication_service.authenticate(loginDTO.getUsername(), loginDTO.getPassword());
     }
 
-    @PostMapping(path = "/logout")
-    public String logout(@RequestBody LoginDTO loginDTO) {
-        return this.authentication_service.logout(loginDTO.getUsername());
-    }
 }

@@ -1,14 +1,23 @@
 package edu.ucema.academics.models.users;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import edu.ucema.academics.models.users.interfaces.EUserRoles;
 import jakarta.persistence.*;
 import org.hibernate.annotations.GenericGenerator;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 @Entity
 @Table(name = "user")
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "identifier")
-public class User {
+public class User implements UserDetails {
     // ! Attributes
     // * Data
     @Id
@@ -32,6 +41,7 @@ public class User {
     // * Relationships
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "password_id")
+    @JsonIgnore
     private Password password;
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
     @PrimaryKeyJoinColumn
@@ -51,7 +61,7 @@ public class User {
         this.setVerifiedEmail(verified_email);
         this.setUnverifiedEmail(unverified_email);
         this.setEmailVerificationCode(email_verification_code);
-        this.setPassword(user_password);
+        this.setPasswordInstance(user_password);
         this.setProfessorProfile(professor_profile);
         this.setStudentProfile(student_profile);
 
@@ -67,7 +77,7 @@ public class User {
         this.setVerifiedEmail(user_instance.getVerifiedEmail());
         this.setUnverifiedEmail(user_instance.getUnverifiedEmail());
         this.setEmailVerificationCode(user_instance.getEmailVerificationCode());
-        this.setPassword(user_instance.getPassword());
+        this.setPasswordInstance(user_instance.getPasswordInstance());
         this.setProfessorProfile(user_instance.getProfessorProfile());
         this.setStudentProfile(user_instance.getStudentProfile());
 
@@ -104,7 +114,7 @@ public class User {
         return this.emailVerificationCode;
     }
 
-    public Password getPassword() {
+    public Password getPasswordInstance() {
         return this.password;
     }
 
@@ -114,6 +124,14 @@ public class User {
 
     public Student getStudentProfile() {
         return this.studentProfile;
+    }
+
+    public List<EUserRoles> getRoles() {
+        List<EUserRoles> user_roles = new ArrayList<>();
+        if (this.getProfessorProfile() != null) user_roles.add(EUserRoles.PROFESSOR);
+        if (this.getStudentProfile() != null) user_roles.add(EUserRoles.STUDENT);
+        if (user_roles.size() == 0) user_roles.add(EUserRoles.NONE);
+        return user_roles;
     }
 
 
@@ -148,7 +166,7 @@ public class User {
         this.emailVerificationCode = email_verification_code;
     }
 
-    public void setPassword(Password password_instance) {
+    public void setPasswordInstance(Password password_instance) {
         this.password = password_instance != null ? new Password(password_instance) : null;
     }
 
@@ -158,5 +176,43 @@ public class User {
 
     public void setStudentProfile(Student student_profile) {
         this.studentProfile = studentProfile != null ? new Student(student_profile) : null;
+    }
+
+    // * Auth Methods
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+
+    @Override
+    public String getUsername() {
+        return this.getVerifiedEmail();
+    }
+
+    @Override
+    public String getPassword() {
+        return this.getPasswordInstance().getPassword();
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        authorities.add(new SimpleGrantedAuthority(this.getRoles().toString()));
+        return authorities;
     }
 }
