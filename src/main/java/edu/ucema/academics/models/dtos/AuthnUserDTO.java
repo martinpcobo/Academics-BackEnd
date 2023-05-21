@@ -1,13 +1,13 @@
 package edu.ucema.academics.models.dtos;
 
-public class AuthnFinishRegisterDTO {
+public class AuthnUserDTO {
     // ! Attributes
     private String username;
     private String authenticator_name;
     private String public_key;
 
     // ! Constructors
-    public AuthnFinishRegisterDTO() {
+    public AuthnUserDTO() {
     }
 
     // ! Methods

@@ -3,6 +3,7 @@ package edu.ucema.academics.services;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.yubico.webauthn.*;
 import com.yubico.webauthn.data.*;
+import com.yubico.webauthn.exception.AssertionFailedException;
 import com.yubico.webauthn.exception.RegistrationFailedException;
 import edu.ucema.academics.authentication.jwt.JwtUtilities;
 import edu.ucema.academics.models.auth.Authenticator;
@@ -49,7 +50,7 @@ public class AuthenticatorService implements CredentialRepository {
                 .build();
     }
 
-    // ! Business Methods
+    // ! Username-Password Methods
     // * Authenticate User
     public String authenticate(String email, String password) {
         Optional<User> user = this.user_repository.findByVerifiedEmail(email);
@@ -66,13 +67,7 @@ public class AuthenticatorService implements CredentialRepository {
         return jwt_utilities.generateToken(db_user.getVerifiedEmail(), db_user.getIdentifier());
     }
 
-    /*
-    // * Get Authenticated User
-    public Optional<User> getUserByUsername(String username) {
-        return this.user_repository.findByVerifiedEmail(username);
-    }
-    */
-
+    // ! WebAuthn Methods
     // * WebAuthn Start Auth Registration
     public ResponseEntity<?> startAuthnRegistration(String username) throws JsonProcessingException, BadCredentialsException {
         Optional<User> opt_db_user = user_repository.findByVerifiedEmail(username);
@@ -95,6 +90,7 @@ public class AuthenticatorService implements CredentialRepository {
         return ResponseEntity.status(HttpStatus.OK).body(registration.toCredentialsCreateJson());
     }
 
+    // * WebAuthn Finish Auth Registration
     public ResponseEntity<?> endAuthnRegistration(String public_key, String username, String credential_name) throws IOException, RegistrationFailedException {
         Optional<User> opt_db_user = user_repository.findByVerifiedEmail(username);
         if (opt_db_user.isEmpty()) {
@@ -119,8 +115,51 @@ public class AuthenticatorService implements CredentialRepository {
         return ResponseEntity.status(HttpStatus.OK).body("Successfully registered the Authn Element for the selected User.");
     }
 
+    // * WebAuthn Start Auth Login
+    public ResponseEntity<?> startAuthnLogin(String username) throws JsonProcessingException, BadCredentialsException {
+        Optional<User> opt_db_user = user_repository.findByVerifiedEmail(username);
+        if (opt_db_user.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Could not find the selected User, please try again later.");
+        }
 
-    // ! Authn Required Methods
+        AssertionRequest assertion_request = relyingParty.startAssertion(StartAssertionOptions.builder()
+                .username(opt_db_user.get().getVerifiedEmail())
+                .build());
+
+        this.assertionRequestMap.put(opt_db_user.get().getIdentifier(), assertion_request);
+        return ResponseEntity.status(HttpStatus.OK).body(assertion_request.toCredentialsGetJson());
+    }
+
+    // * WebAuthn Finish Auth Login
+    public ResponseEntity<?> endAuthnLogin(String public_key, String username) throws IOException, AssertionFailedException {
+        Optional<User> opt_db_user = user_repository.findByVerifiedEmail(username);
+        if (opt_db_user.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Could not find the selected User, please try again later.");
+        }
+
+        PublicKeyCredential<AuthenticatorAssertionResponse, ClientAssertionExtensionOutputs> pkc = PublicKeyCredential.parseAssertionResponseJson(public_key);
+
+        AssertionRequest assertion_request = this.assertionRequestMap.get(opt_db_user.get().getIdentifier());
+        if (assertion_request == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("The selected User did not start the Authn Login Process, please start the process before attempting to finish it.");
+        }
+
+        AssertionResult assertion_result = relyingParty.finishAssertion(FinishAssertionOptions.builder()
+                .request(assertion_request)
+                .response(pkc)
+                .build());
+
+        if (assertion_result.isSuccess()) {
+            //return result.getUsername();
+            return ResponseEntity.status(HttpStatus.OK).body(jwt_utilities.generateToken(opt_db_user.get().getVerifiedEmail(), opt_db_user.get().getIdentifier()));
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed to authenticate the selected User.");
+        }
+
+    }
+
+
+    // * Get Credentials from Username
     @Override
     public Set<PublicKeyCredentialDescriptor> getCredentialIdsForUsername(String username) {
         Optional<User> user = user_repository.findByVerifiedEmail(username);
@@ -138,18 +177,21 @@ public class AuthenticatorService implements CredentialRepository {
                 .collect(Collectors.toSet());
     }
 
+    // * Get User Handle from Username
     @Override
     public Optional<ByteArray> getUserHandleForUsername(String username) {
         Optional<User> user = user_repository.findByVerifiedEmail(username);
         return user.map(User::getHandle);
     }
 
+    // * Get Username from User Handle
     @Override
     public Optional<String> getUsernameForUserHandle(ByteArray userHandle) {
         Optional<User> user = user_repository.findByHandle(userHandle);
         return user.map(User::getUsername);
     }
 
+    // * Get User Handle from Credential ID
     @Override
     public Optional<RegisteredCredential> lookup(ByteArray credentialId, ByteArray userHandle) {
         Optional<Authenticator> auth = authenticator_repository.findByCredentialId(credentialId);
@@ -164,6 +206,7 @@ public class AuthenticatorService implements CredentialRepository {
         );
     }
 
+    // * Get All Credentials from Credential ID
     @Override
     public Set<RegisteredCredential> lookupAll(ByteArray credentialId) {
         List<Authenticator> auth = authenticator_repository.findAllByCredentialId(credentialId);

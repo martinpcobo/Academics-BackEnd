@@ -1,6 +1,6 @@
 package edu.ucema.academics.controllers;
 
-import edu.ucema.academics.models.dtos.AuthnFinishRegisterDTO;
+import edu.ucema.academics.models.dtos.AuthnUserDTO;
 import edu.ucema.academics.models.dtos.LoginDTO;
 import edu.ucema.academics.services.AuthenticatorService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,14 +17,16 @@ public class AuthController {
     private AuthenticatorService authentication_service;
 
 
-    // ! Endpoints
+    // ! Username-Password Endpoints
+    // * Login using Username and Password
     @PostMapping(path = "/login")
     public String authenticate(@RequestBody LoginDTO loginDTO) {
         return this.authentication_service.authenticate(loginDTO.getUsername(), loginDTO.getPassword());
     }
 
+    // ! WebAuthn Endpoints
     // * Start Authn Authentication Registration
-    @PostMapping(path = "/webauthn/start")
+    @PostMapping(path = "/webauthn/register/start")
     public ResponseEntity<?> startAuthRegistration(@PathVariable String username) {
         try {
             return authentication_service.startAuthnRegistration(username);
@@ -34,13 +36,34 @@ public class AuthController {
     }
 
     // * End Authn Authentication Registration
-    @PostMapping(path = "/webauthn/end")
-    public ResponseEntity<?> endAuthRegistration(@RequestBody AuthnFinishRegisterDTO authnFinishRegisterDTO) {
+    @PostMapping(path = "/webauthn/register/end")
+    public ResponseEntity<?> endAuthRegistration(@RequestBody AuthnUserDTO authnUserDTO) {
         try {
-            return authentication_service.endAuthnRegistration(authnFinishRegisterDTO.getPublicKey(), authnFinishRegisterDTO.getUsername(), authnFinishRegisterDTO.getAuthenticatorName());
+            return authentication_service.endAuthnRegistration(authnUserDTO.getPublicKey(), authnUserDTO.getUsername(), authnUserDTO.getAuthenticatorName());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
         }
     }
+
+    // * Start Authn Authentication Login
+    @PostMapping(path = "/webauthn/login/start")
+    public ResponseEntity<?> startAuthLogin(@RequestBody AuthnUserDTO authnUserDTO) {
+        try {
+            return authentication_service.startAuthnLogin(authnUserDTO.getUsername());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
+        }
+    }
+
+    // * End Authn Authentication Login
+    @PostMapping(path = "/webauthn/login/end")
+    public ResponseEntity<?> endAuthLogin(@RequestBody AuthnUserDTO authnUserDTO) {
+        try {
+            return authentication_service.endAuthnLogin(authnUserDTO.getPublicKey(), authnUserDTO.getUsername());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
+        }
+    }
+
 
 }
