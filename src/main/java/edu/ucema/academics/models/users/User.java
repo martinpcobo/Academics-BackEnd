@@ -3,7 +3,10 @@ package edu.ucema.academics.models.users;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.yubico.webauthn.data.ByteArray;
+import edu.ucema.academics.models.auth.Credential;
 import edu.ucema.academics.models.users.interfaces.EUserRoles;
+import edu.ucema.academics.utilities.ByteArrayAttributeConverter;
 import jakarta.persistence.*;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.security.core.GrantedAuthority;
@@ -37,12 +40,15 @@ public class User implements UserDetails {
     private String unverifiedEmail;
     @Column(name = "email_verification_code")
     private String emailVerificationCode;
+    @Column(name = "handle", length = 64)
+    @Convert(converter = ByteArrayAttributeConverter.class)
+    private ByteArray handle;
 
     // * Relationships
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinColumn(name = "password_id")
+    @JoinColumn(name = "credential_id")
     @JsonIgnore
-    private Password password;
+    private Credential credential;
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
     @PrimaryKeyJoinColumn
     private Student studentProfile;
@@ -54,16 +60,17 @@ public class User implements UserDetails {
     protected User() {
     }
 
-    public User(String user_id, String user_name, String user_last_name, String verified_email, String unverified_email, String email_verification_code, Password user_password, Student student_profile, Professor professor_profile) {
+    public User(String user_id, String user_name, String user_last_name, String verified_email, String unverified_email, String email_verification_code, Credential user_credential, Student student_profile, Professor professor_profile, ByteArray handle) {
         this.setIdentifier(user_id);
         this.setFirstName(user_name);
         this.setLastName(user_last_name);
         this.setVerifiedEmail(verified_email);
         this.setUnverifiedEmail(unverified_email);
         this.setEmailVerificationCode(email_verification_code);
-        this.setPasswordInstance(user_password);
+        this.setCredential(user_credential);
         this.setProfessorProfile(professor_profile);
         this.setStudentProfile(student_profile);
+        this.setHandle(handle);
 
         this.setName();
     }
@@ -77,9 +84,10 @@ public class User implements UserDetails {
         this.setVerifiedEmail(user_instance.getVerifiedEmail());
         this.setUnverifiedEmail(user_instance.getUnverifiedEmail());
         this.setEmailVerificationCode(user_instance.getEmailVerificationCode());
-        this.setPasswordInstance(user_instance.getPasswordInstance());
+        this.setCredential(user_instance.getCredential());
         this.setProfessorProfile(user_instance.getProfessorProfile());
         this.setStudentProfile(user_instance.getStudentProfile());
+        this.setHandle(user_instance.getHandle());
 
         this.setName();
     }
@@ -114,8 +122,8 @@ public class User implements UserDetails {
         return this.emailVerificationCode;
     }
 
-    public Password getPasswordInstance() {
-        return this.password;
+    public Credential getCredential() {
+        return this.credential;
     }
 
     public Professor getProfessorProfile() {
@@ -132,6 +140,10 @@ public class User implements UserDetails {
         if (this.getStudentProfile() != null) user_roles.add(EUserRoles.STUDENT);
         if (user_roles.size() == 0) user_roles.add(EUserRoles.NONE);
         return user_roles;
+    }
+
+    public ByteArray getHandle() {
+        return this.handle;
     }
 
 
@@ -166,8 +178,8 @@ public class User implements UserDetails {
         this.emailVerificationCode = email_verification_code;
     }
 
-    public void setPasswordInstance(Password password_instance) {
-        this.password = password_instance != null ? new Password(password_instance) : null;
+    public void setCredential(Credential credential_instance) {
+        this.credential = credential_instance != null ? new Credential(credential_instance) : null;
     }
 
     public void setProfessorProfile(Professor professor_profile) {
@@ -176,6 +188,10 @@ public class User implements UserDetails {
 
     public void setStudentProfile(Student student_profile) {
         this.studentProfile = studentProfile != null ? new Student(student_profile) : null;
+    }
+
+    public void setHandle(ByteArray handle) {
+        this.handle = handle;
     }
 
     // * Auth Methods
@@ -206,7 +222,7 @@ public class User implements UserDetails {
 
     @Override
     public String getPassword() {
-        return this.getPasswordInstance().getPassword();
+        return this.getCredential().getPassword();
     }
 
     @Override

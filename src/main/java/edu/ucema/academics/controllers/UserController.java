@@ -71,7 +71,7 @@ public class UserController {
         }
     }
 
-    // Change User Password
+    // Change User Credential
     @PutMapping(path = "/password")
     public ResponseEntity<?> changeUserPassword(@RequestParam String user_id, @RequestBody PasswordChangeDTO password_change) {
         try {
