@@ -1,13 +1,15 @@
 package edu.ucema.academics.services;
 
+import com.yubico.webauthn.data.ByteArray;
+import edu.ucema.academics.models.auth.Credential;
 import edu.ucema.academics.models.dtos.PasswordChangeDTO;
-import edu.ucema.academics.models.users.Password;
 import edu.ucema.academics.models.users.User;
-import edu.ucema.academics.repositories.PasswordRepository;
+import edu.ucema.academics.repositories.CredentialRepository;
 import edu.ucema.academics.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -19,16 +21,14 @@ public class UserService {
     @Autowired
     private UserRepository user_repository;
     @Autowired
-    private PasswordRepository password_repository;
-
-    // ! Constructors
-    public UserService() {
-    }
+    private CredentialRepository credential_repository;
+    @Autowired
+    private PasswordEncoder password_encoder;
 
     // ! Methods
     // * Get Secure User
     private User _getSecureUser(User user) {
-        user.setPassword(null);
+        user.setCredential(null);
         return user;
     }
 
@@ -37,14 +37,18 @@ public class UserService {
     // * Create a User
     public ResponseEntity<User> createUser(User user) {
         User new_user = new User(user);
-        new_user.setPassword(null);
+        new_user.setCredential(null);
+        new_user.setHandle(new ByteArray(new byte[64]));
 
         User db_user = user_repository.save(new_user);
 
-        // Set the User's Password
-        Password new_password = new Password(user.getPassword());
-        db_user.setPassword(password_repository.save(new_password));
+        // Set the User's Credential
+        Credential new_credential = new Credential();
+        new_credential.setIdentifier(db_user.getIdentifier());
+        new_credential.setPassword(password_encoder.encode(user.getCredential().getPassword()));
+        new_credential.setUser(db_user);
 
+        db_user.setCredential(credential_repository.save(new_credential));
         return ResponseEntity.status(HttpStatus.OK).body(this._getSecureUser(user_repository.save(db_user)));
     }
 
@@ -111,14 +115,14 @@ public class UserService {
         }
     }
 
-    // * Change User Password
+    // * Change User Credential
     public ResponseEntity<?> changePassword(String user_id, PasswordChangeDTO password_change) throws Exception {
         Optional<User> opt_db_user = user_repository.findById(user_id);
         if (opt_db_user.isPresent()) {
             User db_user = opt_db_user.get();
 
-            if (db_user.getPassword().getPassword().equals(password_change.getOldPassword())) {
-                db_user.getPassword().setPassword(password_change.getNewPassword());
+            if (db_user.getCredential().getPassword().equals(password_change.getOldPassword())) {
+                db_user.getCredential().setPassword(password_change.getNewPassword());
                 return ResponseEntity.status(HttpStatus.OK).body(this._getSecureUser(user_repository.save(db_user)));
             } else {
                 return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("The provided password was incorrect. Please try again later");

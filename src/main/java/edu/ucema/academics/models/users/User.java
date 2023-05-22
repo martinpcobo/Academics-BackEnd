@@ -1,14 +1,27 @@
 package edu.ucema.academics.models.users;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.yubico.webauthn.data.ByteArray;
+import edu.ucema.academics.models.auth.Credential;
+import edu.ucema.academics.models.users.interfaces.EUserRoles;
+import edu.ucema.academics.utilities.ByteArrayAttributeConverter;
 import jakarta.persistence.*;
 import org.hibernate.annotations.GenericGenerator;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 @Entity
 @Table(name = "user")
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "identifier")
-public class User {
+public class User implements UserDetails {
     // ! Attributes
     // * Data
     @Id
@@ -28,11 +41,15 @@ public class User {
     private String unverifiedEmail;
     @Column(name = "email_verification_code")
     private String emailVerificationCode;
+    @Column(name = "handle")
+    @Convert(converter = ByteArrayAttributeConverter.class)
+    private ByteArray handle;
 
     // * Relationships
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinColumn(name = "password_id")
-    private Password password;
+    @JoinColumn(name = "credential_id")
+    @JsonIgnore
+    private Credential credential;
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
     @PrimaryKeyJoinColumn
     private Student studentProfile;
@@ -42,18 +59,20 @@ public class User {
 
     // ! Constructors
     protected User() {
+        this.setName();
     }
 
-    public User(String user_id, String user_name, String user_last_name, String verified_email, String unverified_email, String email_verification_code, Password user_password, Student student_profile, Professor professor_profile) {
+    public User(String user_id, String user_name, String user_last_name, String verified_email, String unverified_email, String email_verification_code, Credential user_credential, Student student_profile, Professor professor_profile, ByteArray handle) {
         this.setIdentifier(user_id);
         this.setFirstName(user_name);
         this.setLastName(user_last_name);
         this.setVerifiedEmail(verified_email);
         this.setUnverifiedEmail(unverified_email);
         this.setEmailVerificationCode(email_verification_code);
-        this.setPassword(user_password);
+        this.setCredential(user_credential);
         this.setProfessorProfile(professor_profile);
         this.setStudentProfile(student_profile);
+        this.setHandle(handle);
 
         this.setName();
     }
@@ -67,9 +86,10 @@ public class User {
         this.setVerifiedEmail(user_instance.getVerifiedEmail());
         this.setUnverifiedEmail(user_instance.getUnverifiedEmail());
         this.setEmailVerificationCode(user_instance.getEmailVerificationCode());
-        this.setPassword(user_instance.getPassword());
+        this.setCredential(user_instance.getCredential());
         this.setProfessorProfile(user_instance.getProfessorProfile());
         this.setStudentProfile(user_instance.getStudentProfile());
+        this.setHandle(user_instance.getHandle());
 
         this.setName();
     }
@@ -89,6 +109,7 @@ public class User {
     }
 
     public String getName() {
+        this.setName();
         return this.name;
     }
 
@@ -104,8 +125,8 @@ public class User {
         return this.emailVerificationCode;
     }
 
-    public Password getPassword() {
-        return this.password;
+    public Credential getCredential() {
+        return this.credential;
     }
 
     public Professor getProfessorProfile() {
@@ -114,6 +135,18 @@ public class User {
 
     public Student getStudentProfile() {
         return this.studentProfile;
+    }
+
+    public List<EUserRoles> getRoles() {
+        List<EUserRoles> user_roles = new ArrayList<>();
+        if (this.getProfessorProfile() != null) user_roles.add(EUserRoles.PROFESSOR);
+        if (this.getStudentProfile() != null) user_roles.add(EUserRoles.STUDENT);
+        if (user_roles.size() == 0) user_roles.add(EUserRoles.NONE);
+        return user_roles;
+    }
+
+    public ByteArray getHandle() {
+        return this.handle;
     }
 
 
@@ -148,8 +181,9 @@ public class User {
         this.emailVerificationCode = email_verification_code;
     }
 
-    public void setPassword(Password password_instance) {
-        this.password = password_instance != null ? new Password(password_instance) : null;
+    @JsonProperty("credential")
+    public void setCredential(Credential credential_instance) {
+        this.credential = credential_instance != null ? new Credential(credential_instance) : null;
     }
 
     public void setProfessorProfile(Professor professor_profile) {
@@ -158,5 +192,55 @@ public class User {
 
     public void setStudentProfile(Student student_profile) {
         this.studentProfile = studentProfile != null ? new Student(student_profile) : null;
+    }
+
+    public void setHandle(ByteArray handle) {
+        this.handle = handle;
+    }
+
+    // * Auth Methods
+    @Override
+    @JsonIgnore
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    @JsonIgnore
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    @JsonIgnore
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    @JsonIgnore
+    public boolean isEnabled() {
+        return true;
+    }
+
+    @Override
+    @JsonIgnore
+    public String getUsername() {
+        return this.getVerifiedEmail();
+    }
+
+    @Override
+    @JsonIgnore
+    public String getPassword() {
+        if (this.getCredential() == null) return null;
+        return this.getCredential().getPassword();
+    }
+
+    @Override
+    @JsonIgnore
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        authorities.add(new SimpleGrantedAuthority(this.getRoles().toString()));
+        return authorities;
     }
 }

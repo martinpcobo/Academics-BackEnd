@@ -1,30 +1,48 @@
-# Record Table Definition
-CREATE TABLE password (
-    id VARCHAR(36) ,
-    password VARCHAR(100),
+USE academics_dev;
 
-    PRIMARY KEY (id)
+# Record Table Definition
+CREATE TABLE credential (
+    id VARCHAR(36),
+    PRIMARY KEY (id),
+
+    password VARCHAR(100) DEFAULT NULL
+);
+CREATE TABLE authenticator (
+    id VARCHAR(36),
+    PRIMARY KEY (id),
+
+    credential_id VARCHAR(36) NOT NULL,
+    FOREIGN KEY (credential_id) REFERENCES credential(id) ON DELETE CASCADE,
+
+    name VARCHAR(32),
+
+    public_key VARBINARY(255),
+    authenticator_id VARBINARY(255),
+    signature_count LONG,
+    aaguid VARBINARY(255)
 );
 CREATE TABLE student (
     user_id VARCHAR(36) NOT NULL,
     PRIMARY KEY (user_id)
 );
-
 CREATE TABLE professor (
     user_id VARCHAR(36) NOT NULL,
     PRIMARY KEY (user_id)
 );
+
 CREATE TABLE user(
 	id VARCHAR(36) ,
 	PRIMARY KEY (id),
-	password_id VARCHAR(36),
-	FOREIGN KEY (password_id) REFERENCES password(id) ON DELETE CASCADE,
+
+	credential_id VARCHAR(36),
+	FOREIGN KEY (credential_id) REFERENCES credential(id) ON DELETE SET NULL,
 
 	first_name VARCHAR(50) NOT NULL,
 	last_name VARCHAR(50) NOT NULL,
 	unverified_email VARCHAR(100) DEFAULT NULL,
-	verified_email VARCHAR(100) DEFAULT NULL,
-	email_verification_code VARCHAR(36) DEFAULT NULL
+	verified_email VARCHAR(100) NOT NULL,
+	email_verification_code VARCHAR(36) DEFAULT NULL,
+	handle VARBINARY(64) DEFAULT NULL
 );
 
 CREATE TABLE course (
