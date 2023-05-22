@@ -2,7 +2,6 @@ package edu.ucema.academics.models.courses;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import edu.ucema.academics.models.Subject;
 import edu.ucema.academics.models.users.Professor;
 import edu.ucema.academics.models.users.Student;
 import jakarta.persistence.*;

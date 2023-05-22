@@ -1,6 +1,6 @@
 package edu.ucema.academics.services;
 
-import edu.ucema.academics.models.Subject;
+import edu.ucema.academics.models.courses.Subject;
 import edu.ucema.academics.repositories.SubjectRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

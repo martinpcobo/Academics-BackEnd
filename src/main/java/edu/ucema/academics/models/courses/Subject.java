@@ -1,8 +1,7 @@
-package edu.ucema.academics.models;
+package edu.ucema.academics.models.courses;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import edu.ucema.academics.models.courses.Class;
 import jakarta.persistence.*;
 import org.hibernate.annotations.GenericGenerator;
 

@@ -1,4 +1,4 @@
-package edu.ucema.academics.services;
+package edu.ucema.academics.services.auth;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.yubico.webauthn.*;
@@ -22,7 +22,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-public class AuthenticatorService implements CredentialRepository {
+public class AuthenticationService implements CredentialRepository {
     // ! Injected Dependencies
     @Autowired
     private JwtUtilities jwt_utilities;
@@ -38,7 +38,7 @@ public class AuthenticatorService implements CredentialRepository {
     private final Map<String, AssertionRequest> assertionRequestMap = new HashMap<>();
 
     // ! Constructor
-    public AuthenticatorService() {
+    public AuthenticationService() {
         RelyingPartyIdentity relyingPartyIdentity = RelyingPartyIdentity.builder()
                 .id("localhost")
                 .name("UCEMA Academics")
@@ -69,7 +69,8 @@ public class AuthenticatorService implements CredentialRepository {
     }
 
     // ! WebAuthn Methods
-    // * WebAuthn Start Auth Registration
+    // * Authentication Methods
+    // WebAuthn Start Auth Registration
     public ResponseEntity<?> startAuthnRegistration(String username) throws JsonProcessingException, BadCredentialsException {
         Optional<User> opt_db_user = user_repository.findByVerifiedEmail(username);
         if (opt_db_user.isEmpty()) {
@@ -91,7 +92,7 @@ public class AuthenticatorService implements CredentialRepository {
         return ResponseEntity.status(HttpStatus.OK).body(registration.toCredentialsCreateJson());
     }
 
-    // * WebAuthn Finish Auth Registration
+    // WebAuthn Finish Auth Registration
     public ResponseEntity<?> endAuthnRegistration(String public_key, String username, String credential_name) throws IOException, RegistrationFailedException {
         Optional<User> opt_db_user = user_repository.findByVerifiedEmail(username);
         if (opt_db_user.isEmpty()) {
@@ -116,7 +117,7 @@ public class AuthenticatorService implements CredentialRepository {
         return ResponseEntity.status(HttpStatus.OK).body("Successfully registered the Authn Element for the selected User.");
     }
 
-    // * WebAuthn Start Auth Login
+    // WebAuthn Start Auth Login
     public ResponseEntity<?> startAuthnLogin(String username) throws JsonProcessingException, BadCredentialsException {
         Optional<User> opt_db_user = user_repository.findByVerifiedEmail(username);
         if (opt_db_user.isEmpty()) {
@@ -131,7 +132,7 @@ public class AuthenticatorService implements CredentialRepository {
         return ResponseEntity.status(HttpStatus.OK).body(assertion_request.toCredentialsGetJson());
     }
 
-    // * WebAuthn Finish Auth Login
+    // WebAuthn Finish Auth Login
     public ResponseEntity<?> endAuthnLogin(String public_key, String username) throws IOException, AssertionFailedException {
         Optional<User> opt_db_user = user_repository.findByVerifiedEmail(username);
         if (opt_db_user.isEmpty()) {
@@ -159,8 +160,8 @@ public class AuthenticatorService implements CredentialRepository {
 
     }
 
-
-    // * Get Credentials from Username
+    // * WebAuthn Credential Repository Methods
+    // Get Credentials from Username
     @Override
     public Set<PublicKeyCredentialDescriptor> getCredentialIdsForUsername(String username) {
         Optional<User> user = user_repository.findByVerifiedEmail(username);
@@ -178,21 +179,21 @@ public class AuthenticatorService implements CredentialRepository {
                 .collect(Collectors.toSet());
     }
 
-    // * Get User Handle from Username
+    // Get User Handle from Username
     @Override
     public Optional<ByteArray> getUserHandleForUsername(String username) {
         Optional<User> user = user_repository.findByVerifiedEmail(username);
         return user.map(User::getHandle);
     }
 
-    // * Get Username from User Handle
+    // Get Username from User Handle
     @Override
     public Optional<String> getUsernameForUserHandle(ByteArray userHandle) {
         Optional<User> user = user_repository.findByHandle(userHandle);
         return user.map(User::getUsername);
     }
 
-    // * Get User Handle from Credential ID
+    // Get User Handle from Credential ID
     @Override
     public Optional<RegisteredCredential> lookup(ByteArray credentialId, ByteArray userHandle) {
         Optional<Authenticator> auth = authenticator_repository.findByAuthenticatorId(credentialId);
@@ -207,7 +208,7 @@ public class AuthenticatorService implements CredentialRepository {
         );
     }
 
-    // * Get All Credentials from Credential ID
+    // Get All Credentials from Credential ID
     @Override
     public Set<RegisteredCredential> lookupAll(ByteArray credentialId) {
         List<Authenticator> auth = authenticator_repository.findAllByAuthenticatorId(credentialId);

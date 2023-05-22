@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.yubico.webauthn.data.ByteArray;
 import edu.ucema.academics.models.auth.Credential;
-import edu.ucema.academics.models.users.interfaces.EUserRoles;
+import edu.ucema.academics.models.users.enums.EUserRoles;
 import edu.ucema.academics.utilities.ByteArrayAttributeConverter;
 import jakarta.persistence.*;
 import org.hibernate.annotations.GenericGenerator;

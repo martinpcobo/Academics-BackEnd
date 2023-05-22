@@ -1,8 +1,8 @@
-package edu.ucema.academics.controllers;
+package edu.ucema.academics.controllers.auth;
 
 import edu.ucema.academics.models.dtos.AuthnUserDTO;
 import edu.ucema.academics.models.dtos.LoginDTO;
-import edu.ucema.academics.services.AuthenticatorService;
+import edu.ucema.academics.services.auth.AuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,10 +11,10 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping(value = "/api/auth")
 @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE})
-public class AuthController {
+public class AuthenticationController {
     // ! Injectable Dependencies
     @Autowired
-    private AuthenticatorService authentication_service;
+    private AuthenticationService authentication_service;
 
 
     // ! Username-Password Endpoints
@@ -25,7 +25,8 @@ public class AuthController {
     }
 
     // ! WebAuthn Endpoints
-    // * Start Authn Authentication Registration
+    // * Authentication Endpoints
+    // Start Authn Authentication Registration
     @PostMapping(path = "/webauthn/register/start")
     public ResponseEntity<?> startAuthRegistration(@RequestBody AuthnUserDTO authnUserDTO) {
         try {
@@ -35,7 +36,7 @@ public class AuthController {
         }
     }
 
-    // * End Authn Authentication Registration
+    // End Authn Authentication Registration
     @PostMapping(path = "/webauthn/register/end")
     public ResponseEntity<?> endAuthRegistration(@RequestBody AuthnUserDTO authnUserDTO) {
         try {
@@ -45,7 +46,7 @@ public class AuthController {
         }
     }
 
-    // * Start Authn Authentication Login
+    // Start Authn Authentication Login
     @PostMapping(path = "/webauthn/login/start")
     public ResponseEntity<?> startAuthLogin(@RequestBody AuthnUserDTO authnUserDTO) {
         try {
@@ -55,7 +56,7 @@ public class AuthController {
         }
     }
 
-    // * End Authn Authentication Login
+    // End Authn Authentication Login
     @PostMapping(path = "/webauthn/login/end")
     public ResponseEntity<?> endAuthLogin(@RequestBody AuthnUserDTO authnUserDTO) {
         try {
@@ -64,6 +65,4 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
         }
     }
-
-
 }
