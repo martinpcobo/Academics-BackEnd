@@ -47,6 +47,7 @@ public class AuthenticatorService implements CredentialRepository {
         this.relyingParty = RelyingParty.builder()
                 .identity(relyingPartyIdentity)
                 .credentialRepository(this)
+                .allowOriginPort(true)
                 .build();
     }
 
@@ -79,7 +80,7 @@ public class AuthenticatorService implements CredentialRepository {
                 StartRegistrationOptions.builder()
                         .user(
                                 UserIdentity.builder()
-                                        .name(opt_db_user.get().getVerifiedEmail())
+                                        .name(opt_db_user.get().getName())
                                         .displayName(opt_db_user.get().getName())
                                         .id(opt_db_user.get().getHandle())
                                         .build()
@@ -194,7 +195,7 @@ public class AuthenticatorService implements CredentialRepository {
     // * Get User Handle from Credential ID
     @Override
     public Optional<RegisteredCredential> lookup(ByteArray credentialId, ByteArray userHandle) {
-        Optional<Authenticator> auth = authenticator_repository.findByCredentialId(credentialId);
+        Optional<Authenticator> auth = authenticator_repository.findByAuthenticatorId(credentialId);
         return auth.map(
                 authenticator ->
                         RegisteredCredential.builder()
@@ -209,7 +210,7 @@ public class AuthenticatorService implements CredentialRepository {
     // * Get All Credentials from Credential ID
     @Override
     public Set<RegisteredCredential> lookupAll(ByteArray credentialId) {
-        List<Authenticator> auth = authenticator_repository.findAllByCredentialId(credentialId);
+        List<Authenticator> auth = authenticator_repository.findAllByAuthenticatorId(credentialId);
         return auth.stream()
                 .map(
                         authenticator ->

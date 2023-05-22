@@ -11,9 +11,9 @@ import java.util.Optional;
 
 @Repository
 public interface AuthenticatorRepository extends CrudRepository<Authenticator, String> {
-    Optional<Authenticator> findByCredentialId(ByteArray credentialId);
+    Optional<Authenticator> findByAuthenticatorId(ByteArray credential_id);
 
     List<Authenticator> findAllByCredential(Credential credential);
 
-    List<Authenticator> findAllByCredentialId(ByteArray credentialId);
+    List<Authenticator> findAllByAuthenticatorId(ByteArray credential_id);
 }

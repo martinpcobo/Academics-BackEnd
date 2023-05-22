@@ -1,5 +1,7 @@
 package edu.ucema.academics.models.auth;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.yubico.webauthn.RegistrationResult;
 import com.yubico.webauthn.data.AttestedCredentialData;
 import com.yubico.webauthn.data.AuthenticatorAttestationResponse;
@@ -12,6 +14,7 @@ import java.util.Optional;
 
 @Entity
 @Table(name = "authenticator")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "identifier")
 public class Authenticator {
     // ! Attributes
     // * Data
@@ -24,20 +27,17 @@ public class Authenticator {
     @Column(name = "name")
     private String name;
 
-    @Lob
     @Column(name = "public_key")
     @Convert(converter = ByteArrayAttributeConverter.class)
     private ByteArray public_key;
 
-    @Lob
     @Column(name = "authenticator_id")
     @Convert(converter = ByteArrayAttributeConverter.class)
-    private ByteArray authenticator_id;
+    private ByteArray authenticatorId;
 
     @Column(name = "signature_count")
     private Long signature_count;
 
-    @Lob
     @Column(name = "aaguid", nullable = true)
     @Convert(converter = ByteArrayAttributeConverter.class)
     private ByteArray aaguid;
@@ -78,7 +78,7 @@ public class Authenticator {
     }
 
     public ByteArray getAuthenticatorId() {
-        return this.authenticator_id;
+        return this.authenticatorId;
     }
 
     public Long getSignatureCount() {
@@ -107,7 +107,7 @@ public class Authenticator {
     }
 
     public void setAuthenticatorId(ByteArray credential_id) {
-        this.authenticator_id = credential_id;
+        this.authenticatorId = credential_id;
     }
 
     public void setSignatureCount(Long signature_count) {

@@ -1,5 +1,9 @@
 package edu.ucema.academics.models.auth;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import edu.ucema.academics.models.users.User;
 import jakarta.persistence.*;
 import org.hibernate.annotations.GenericGenerator;
@@ -7,7 +11,8 @@ import org.hibernate.annotations.GenericGenerator;
 import java.util.List;
 
 @Entity
-@Table(name = "password")
+@Table(name = "credential")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "identifier")
 public class Credential {
     // ! Attributes
     // * Data
@@ -16,28 +21,33 @@ public class Credential {
     @GeneratedValue(strategy = GenerationType.UUID, generator = "uuid2")
     @GenericGenerator(name = "uuid2", strategy = "uuid2")
     private String id;
+
     @Column(name = "password")
+    @JsonIgnore
     private String password;
 
-    @OneToOne(mappedBy = "credential")
+    @OneToOne(mappedBy = "credential", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private User user;
 
     @OneToMany(mappedBy = "credential")
-    private List<Authenticator> athenticators;
+    private List<Authenticator> authenticators;
 
     // ! Constructors
     public Credential() {
     }
 
-    public Credential(User user, String password, List<Authenticator> athenticators) {
+    public Credential(User user, String password, List<Authenticator> authenticators) {
         this.setIdentifier(user.getIdentifier());
         this.setPassword(password);
         this.setUser(user);
+        this.setAuthenticators(authenticators);
     }
 
     public Credential(Credential credential_instance) {
         this.setIdentifier(credential_instance.getIdentifier());
         this.setPassword(credential_instance.getPassword());
+        this.setUser(credential_instance.getUser());
+        this.setAuthenticators(credential_instance.getAuthenticators());
     }
 
     // ! Methods
@@ -55,7 +65,7 @@ public class Credential {
     }
 
     public List<Authenticator> getAuthenticators() {
-        return this.athenticators;
+        return this.authenticators;
     }
 
 
@@ -64,6 +74,7 @@ public class Credential {
         this.id = identifier;
     }
 
+    @JsonProperty("password")
     public void setPassword(String password) {
         this.password = password;
     }
@@ -72,7 +83,7 @@ public class Credential {
         this.user = user;
     }
 
-    public void setAuthenticators(List<Authenticator> athenticators) {
-        this.athenticators = athenticators;
+    public void setAuthenticators(List<Authenticator> authenticators) {
+        this.authenticators = authenticators;
     }
 }

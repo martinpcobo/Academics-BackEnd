@@ -33,6 +33,7 @@ CREATE TABLE professor (
 CREATE TABLE user(
 	id VARCHAR(36) ,
 	PRIMARY KEY (id),
+
 	credential_id VARCHAR(36),
 	FOREIGN KEY (credential_id) REFERENCES credential(id) ON DELETE SET NULL,
 
@@ -43,8 +44,6 @@ CREATE TABLE user(
 	email_verification_code VARCHAR(36) DEFAULT NULL,
 	handle VARBINARY(64) DEFAULT NULL
 );
-
-ALTER TABLE credential ADD FOREIGN KEY (id) REFERENCES user(id);
 
 CREATE TABLE course (
     id VARCHAR(36) NOT NULL,

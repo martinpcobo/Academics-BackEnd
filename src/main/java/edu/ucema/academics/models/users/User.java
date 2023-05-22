@@ -2,6 +2,7 @@ package edu.ucema.academics.models.users;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.yubico.webauthn.data.ByteArray;
 import edu.ucema.academics.models.auth.Credential;
@@ -40,7 +41,7 @@ public class User implements UserDetails {
     private String unverifiedEmail;
     @Column(name = "email_verification_code")
     private String emailVerificationCode;
-    @Column(name = "handle", length = 64)
+    @Column(name = "handle")
     @Convert(converter = ByteArrayAttributeConverter.class)
     private ByteArray handle;
 
@@ -58,6 +59,7 @@ public class User implements UserDetails {
 
     // ! Constructors
     protected User() {
+        this.setName();
     }
 
     public User(String user_id, String user_name, String user_last_name, String verified_email, String unverified_email, String email_verification_code, Credential user_credential, Student student_profile, Professor professor_profile, ByteArray handle) {
@@ -107,6 +109,7 @@ public class User implements UserDetails {
     }
 
     public String getName() {
+        this.setName();
         return this.name;
     }
 
@@ -178,6 +181,7 @@ public class User implements UserDetails {
         this.emailVerificationCode = email_verification_code;
     }
 
+    @JsonProperty("credential")
     public void setCredential(Credential credential_instance) {
         this.credential = credential_instance != null ? new Credential(credential_instance) : null;
     }
@@ -196,36 +200,44 @@ public class User implements UserDetails {
 
     // * Auth Methods
     @Override
+    @JsonIgnore
     public boolean isAccountNonExpired() {
         return true;
     }
 
     @Override
+    @JsonIgnore
     public boolean isAccountNonLocked() {
         return true;
     }
 
     @Override
+    @JsonIgnore
     public boolean isCredentialsNonExpired() {
         return true;
     }
 
     @Override
+    @JsonIgnore
     public boolean isEnabled() {
         return true;
     }
 
     @Override
+    @JsonIgnore
     public String getUsername() {
         return this.getVerifiedEmail();
     }
 
     @Override
+    @JsonIgnore
     public String getPassword() {
+        if (this.getCredential() == null) return null;
         return this.getCredential().getPassword();
     }
 
     @Override
+    @JsonIgnore
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> authorities = new ArrayList<>();
         authorities.add(new SimpleGrantedAuthority(this.getRoles().toString()));

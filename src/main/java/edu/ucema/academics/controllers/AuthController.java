@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping(value = "/api/auth")
-@CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE})
+@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE})
 public class AuthController {
     // ! Injectable Dependencies
     @Autowired
@@ -27,9 +27,9 @@ public class AuthController {
     // ! WebAuthn Endpoints
     // * Start Authn Authentication Registration
     @PostMapping(path = "/webauthn/register/start")
-    public ResponseEntity<?> startAuthRegistration(@PathVariable String username) {
+    public ResponseEntity<?> startAuthRegistration(@RequestBody AuthnUserDTO authnUserDTO) {
         try {
-            return authentication_service.startAuthnRegistration(username);
+            return authentication_service.startAuthnRegistration(authnUserDTO.getUsername());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
         }

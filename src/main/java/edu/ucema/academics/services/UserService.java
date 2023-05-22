@@ -1,5 +1,6 @@
 package edu.ucema.academics.services;
 
+import com.yubico.webauthn.data.ByteArray;
 import edu.ucema.academics.models.auth.Credential;
 import edu.ucema.academics.models.dtos.PasswordChangeDTO;
 import edu.ucema.academics.models.users.User;
@@ -20,7 +21,7 @@ public class UserService {
     @Autowired
     private UserRepository user_repository;
     @Autowired
-    private CredentialRepository password_repository;
+    private CredentialRepository credential_repository;
     @Autowired
     private PasswordEncoder password_encoder;
 
@@ -37,14 +38,17 @@ public class UserService {
     public ResponseEntity<User> createUser(User user) {
         User new_user = new User(user);
         new_user.setCredential(null);
+        new_user.setHandle(new ByteArray(new byte[64]));
 
         User db_user = user_repository.save(new_user);
 
         // Set the User's Credential
         Credential new_credential = new Credential();
+        new_credential.setIdentifier(db_user.getIdentifier());
         new_credential.setPassword(password_encoder.encode(user.getCredential().getPassword()));
-        db_user.setCredential(password_repository.save(new_credential));
+        new_credential.setUser(db_user);
 
+        db_user.setCredential(credential_repository.save(new_credential));
         return ResponseEntity.status(HttpStatus.OK).body(this._getSecureUser(user_repository.save(db_user)));
     }
 

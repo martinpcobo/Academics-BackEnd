@@ -3,8 +3,8 @@ package edu.ucema.academics.models.dtos;
 public class AuthnUserDTO {
     // ! Attributes
     private String username;
-    private String authenticator_name;
-    private String public_key;
+    private String authenticatorName;
+    private String publicKey;
 
     // ! Constructors
     public AuthnUserDTO() {
@@ -17,11 +17,11 @@ public class AuthnUserDTO {
     }
 
     public String getAuthenticatorName() {
-        return this.authenticator_name;
+        return this.authenticatorName;
     }
 
     public String getPublicKey() {
-        return this.public_key;
+        return this.publicKey;
     }
 
     // * Setters
@@ -30,10 +30,10 @@ public class AuthnUserDTO {
     }
 
     public void setAuthenticatorName(String authenticator_name) {
-        this.authenticator_name = authenticator_name;
+        this.authenticatorName = authenticator_name;
     }
 
     public void setPublicKey(String public_key) {
-        this.public_key = public_key;
+        this.publicKey = public_key;
     }
 }
