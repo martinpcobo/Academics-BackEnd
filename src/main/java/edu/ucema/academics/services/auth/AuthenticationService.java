@@ -114,7 +114,7 @@ public class AuthenticationService implements CredentialRepository {
         Authenticator auth_instance = new Authenticator(registration_result, pkc.getResponse(), opt_db_user.get().getCredential(), credential_name);
         authenticator_repository.save(auth_instance);
 
-        return ResponseEntity.status(HttpStatus.OK).body("Successfully registered the Authn Element for the selected User.");
+        return ResponseEntity.status(HttpStatus.OK).body(jwt_utilities.generateToken(opt_db_user.get().getVerifiedEmail(), opt_db_user.get().getIdentifier()));
     }
 
     // WebAuthn Start Auth Login
@@ -152,7 +152,6 @@ public class AuthenticationService implements CredentialRepository {
                 .build());
 
         if (assertion_result.isSuccess()) {
-            //return result.getUsername();
             return ResponseEntity.status(HttpStatus.OK).body(jwt_utilities.generateToken(opt_db_user.get().getVerifiedEmail(), opt_db_user.get().getIdentifier()));
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed to authenticate the selected User.");

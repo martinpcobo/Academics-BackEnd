@@ -1,19 +1,24 @@
 package edu.ucema.academics.models.dtos;
 
-public class AuthnUserDTO {
+public class AuthDetailsDTO {
     // ! Attributes
     private String username;
     private String authenticatorName;
     private String publicKey;
+    private String password;
 
     // ! Constructors
-    public AuthnUserDTO() {
+    public AuthDetailsDTO() {
     }
 
     // ! Methods
     // * Getters
     public String getUsername() {
         return this.username;
+    }
+
+    public String getPassword() {
+        return this.password;
     }
 
     public String getAuthenticatorName() {
@@ -27,6 +32,10 @@ public class AuthnUserDTO {
     // * Setters
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public void setAuthenticatorName(String authenticator_name) {
