@@ -16,4 +16,6 @@ public interface AuthenticatorRepository extends CrudRepository<Authenticator, S
     List<Authenticator> findAllByCredential(Credential credential);
 
     List<Authenticator> findAllByAuthenticatorId(ByteArray credential_id);
+
+    long countByCredential(Credential credential);
 }

@@ -31,6 +31,16 @@ public class AuthenticatorService {
         }
     }
 
+    // * Get Authenticator Count
+    public ResponseEntity<?> getAuthenticatorCount(String user_id) {
+        Optional<User> user = user_repository.findById(user_id);
+        if (user.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Could not find the selected User, please try again later.");
+        } else {
+            return ResponseEntity.status(HttpStatus.OK).body(authenticator_repository.countByCredential(user.get().getCredential()));
+        }
+    }
+
     // * Modify Authenticator Name
     public ResponseEntity<?> modifyAuthenticatorName(String user_id, String authenticator_id, String new_name) {
         Optional<Authenticator> opt_db_authenticator = authenticator_repository.findById(authenticator_id);

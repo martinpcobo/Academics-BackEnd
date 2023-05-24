@@ -12,4 +12,6 @@ public interface UserRepository extends CrudRepository<User, String> {
     Optional<User> findByVerifiedEmail(String email);
 
     Optional<User> findByHandle(ByteArray handle);
+
+    boolean existsUserByVerifiedEmail(String email);
 }

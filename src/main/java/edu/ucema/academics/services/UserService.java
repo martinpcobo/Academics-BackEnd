@@ -34,6 +34,21 @@ public class UserService {
 
     // ! Business Logic
 
+    // * User Exists
+    public ResponseEntity<Boolean> userExists(String username) {
+        return ResponseEntity.status(HttpStatus.OK).body(user_repository.existsUserByVerifiedEmail(username));
+    }
+
+    // * Get User by Verified Email
+    public ResponseEntity<String> getUserByVerifiedEmail(String email) {
+        Optional<User> opt_db_user = user_repository.findByVerifiedEmail(email);
+        if (opt_db_user.isPresent()) {
+            return ResponseEntity.status(HttpStatus.OK).body(opt_db_user.get().getIdentifier());
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+    }
+
     // * Create a User
     public ResponseEntity<User> createUser(User user) {
         User new_user = new User(user);

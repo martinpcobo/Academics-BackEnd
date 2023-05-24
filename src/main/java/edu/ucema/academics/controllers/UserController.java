@@ -10,16 +10,34 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping(value = "/api/user")
-@CrossOrigin(
-        origins = "*",
-        methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE}
-)
+@CrossOrigin(origins = "http://localhost:4200", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE})
 public class UserController {
     @Autowired
     private UserService user_service;
 
     public UserController() {
     }
+
+    // User Exists
+    @GetMapping(path = "/{username}/exists")
+    public ResponseEntity<?> userExistsByUsername(@PathVariable String username) {
+        try {
+            return user_service.userExists(username);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
+        }
+    }
+
+    // Get User Id by Verified Email
+    @GetMapping(path = "/{email}/id")
+    public ResponseEntity<?> getUserIdByVerifiedEmail(@PathVariable String email) {
+        try {
+            return user_service.getUserByVerifiedEmail(email);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
+        }
+    }
+
 
     // Create a User
     @PostMapping(path = "/")
