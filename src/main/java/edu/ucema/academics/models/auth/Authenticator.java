@@ -65,7 +65,7 @@ public class Authenticator {
 
     // ! Methods
     // * Getters
-    public String getIdentificator() {
+    public String getIdentifier() {
         return this.id;
     }
 

@@ -53,19 +53,19 @@ public class AuthenticationService implements CredentialRepository {
 
     // ! Username-Password Methods
     // * Authenticate User
-    public String authenticate(String email, String password) {
+    public ResponseEntity<?> authenticate(String email, String password) {
         Optional<User> user = this.user_repository.findByVerifiedEmail(email);
         if (user.isEmpty()) {
-            throw new BadCredentialsException("Invalid Credentials");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid Credentials");
         }
 
         User db_user = user.get();
 
         if (db_user.getCredential() == null || !password_encoder.matches(password, db_user.getCredential().getPassword())) {
-            throw new BadCredentialsException("Invalid Credentials");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid Credentials");
         }
 
-        return jwt_utilities.generateToken(db_user.getVerifiedEmail(), db_user.getIdentifier());
+        return ResponseEntity.status(HttpStatus.OK).body(jwt_utilities.generateToken(db_user.getVerifiedEmail(), db_user.getIdentifier()));
     }
 
     // ! WebAuthn Methods

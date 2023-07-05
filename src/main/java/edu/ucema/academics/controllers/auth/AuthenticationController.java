@@ -19,7 +19,7 @@ public class AuthenticationController {
     // ! Username-Password Endpoints
     // * Login using Username and Password
     @PostMapping(path = "/login")
-    public String authenticate(@RequestBody AuthDetailsDTO authDetailsDTO) {
+    public ResponseEntity<?> authenticate(@RequestBody AuthDetailsDTO authDetailsDTO) {
         return this.authentication_service.authenticate(authDetailsDTO.getUsername(), authDetailsDTO.getPassword());
     }
 

@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -32,8 +33,8 @@ public class AuthenticatorService {
     }
 
     // * Get Authenticator Count
-    public ResponseEntity<?> getAuthenticatorCount(String user_id) {
-        Optional<User> user = user_repository.findById(user_id);
+    public ResponseEntity<?> getAuthenticatorCount(String user_email) {
+        Optional<User> user = user_repository.findByVerifiedEmail(user_email);
         if (user.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Could not find the selected User, please try again later.");
         } else {

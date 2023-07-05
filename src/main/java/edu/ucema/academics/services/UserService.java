@@ -40,10 +40,20 @@ public class UserService {
     }
 
     // * Get User by Verified Email
-    public ResponseEntity<String> getUserByVerifiedEmail(String email) {
+    public ResponseEntity<String> getUserIDByVerifiedEmail(String email) {
         Optional<User> opt_db_user = user_repository.findByVerifiedEmail(email);
         if (opt_db_user.isPresent()) {
             return ResponseEntity.status(HttpStatus.OK).body(opt_db_user.get().getIdentifier());
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+    }
+
+    // * Get User Information
+    public ResponseEntity<User> getUserInformation(String user_id) {
+        Optional<User> opt_db_user = user_repository.findById(user_id);
+        if (opt_db_user.isPresent()) {
+            return ResponseEntity.status(HttpStatus.OK).body(this._getSecureUser(opt_db_user.get()));
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
@@ -136,8 +146,9 @@ public class UserService {
         if (opt_db_user.isPresent()) {
             User db_user = opt_db_user.get();
 
-            if (db_user.getCredential().getPassword().equals(password_change.getOldPassword())) {
-                db_user.getCredential().setPassword(password_change.getNewPassword());
+
+            if(password_encoder.matches(password_change.getOldPassword(), db_user.getCredential().getPassword())) {
+                db_user.getCredential().setPassword(password_encoder.encode(password_change.getNewPassword()));
                 return ResponseEntity.status(HttpStatus.OK).body(this._getSecureUser(user_repository.save(db_user)));
             } else {
                 return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("The provided password was incorrect. Please try again later");

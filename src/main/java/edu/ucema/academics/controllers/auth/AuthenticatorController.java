@@ -26,10 +26,10 @@ public class AuthenticatorController {
     }
 
     // * Get Authenticator Count
-    @GetMapping(path = "/{user_id}/count")
-    public ResponseEntity<?> getAuthenticatorByUsername(@PathVariable String user_id) {
+    @GetMapping(path = "/{user_email}/count")
+    public ResponseEntity<?> getAuthenticatorByUsername(@PathVariable String user_email) {
         try {
-            return authenticator_service.getAuthenticatorCount(user_id);
+            return authenticator_service.getAuthenticatorCount(user_email);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
         }
