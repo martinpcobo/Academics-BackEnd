@@ -2,6 +2,7 @@ package edu.ucema.academics.controllers;
 
 import edu.ucema.academics.models.courses.Class;
 import edu.ucema.academics.services.ClassService;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,17 +11,25 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "/api/class")
-@CrossOrigin(
-        origins = "*",
-        methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE}
-)
+@RequestMapping(path = "/api/class")
+@CrossOrigin(origins = "http://localhost:4200",allowCredentials = "true", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE})
 public class ClassController {
     // ! Injected Dependencies
     @Autowired
     private ClassService class_service;
 
     // ! Business Logic
+
+    // * Get all classes
+    @GetMapping(path = "/")
+    public ResponseEntity<?> getAllClasses() {
+        try {
+            return class_service.getAllClasses();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
+        }
+    }
+
     // * Create a Class
     @PostMapping(path = "/")
     public ResponseEntity<?> createClass(@RequestBody Class class_instance) {

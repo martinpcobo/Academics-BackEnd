@@ -28,16 +28,20 @@ public class SpringSecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+                .cors()
+                .and()
                 .csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeHttpRequests()
+                .anyRequest().permitAll();
+
+        /*
                 .requestMatchers("**").permitAll()
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/api/auth/authenticator/{user_email}/count").permitAll()
-                .anyRequest().authenticated()
-                .and()
-                .cors();
+                .anyRequest().authenticated();
+        */
 
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();

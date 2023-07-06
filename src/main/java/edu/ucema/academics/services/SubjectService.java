@@ -2,6 +2,7 @@ package edu.ucema.academics.services;
 
 import edu.ucema.academics.models.courses.Subject;
 import edu.ucema.academics.repositories.SubjectRepository;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +21,12 @@ public class SubjectService {
     }
 
     // ! Business Logic
+
+    // * Get all Subjects
+    public ResponseEntity<Iterable<Subject>> getAllSubjects() {
+        return ResponseEntity.status(HttpStatus.OK).body(subject_repositories.findAll());
+    }
+
     // * Create Subject
     public ResponseEntity<Subject> createSubject(Subject subject_instance) {
         return ResponseEntity.status(HttpStatus.OK).body(subject_repositories.save(new Subject(subject_instance)));

@@ -6,6 +6,7 @@ import edu.ucema.academics.models.users.Student;
 import edu.ucema.academics.repositories.ClassRepository;
 import edu.ucema.academics.repositories.ProfessorRepository;
 import edu.ucema.academics.repositories.StudentRepository;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,6 +33,11 @@ public class ClassService {
     }
 
     // ! Business Logic
+
+    // * Get all Classes
+    public ResponseEntity<Iterable<Class>> getAllClasses() {
+        return ResponseEntity.status(200).body(class_repository.findAll());
+    }
 
     // * Create a Class
     public ResponseEntity<Class> createClass(Class class_instance) throws Exception {
