@@ -34,6 +34,11 @@ public class UserService {
 
     // ! Business Logic
 
+    // * Get all users
+    public ResponseEntity<Iterable<User>> getAllUsers() {
+        return ResponseEntity.status(HttpStatus.OK).body(user_repository.findAll());
+    }
+
     // * User Exists
     public ResponseEntity<Boolean> userExists(String username) {
         return ResponseEntity.status(HttpStatus.OK).body(user_repository.existsUserByVerifiedEmail(username));
@@ -92,29 +97,57 @@ public class UserService {
         }
     }
 
-    // * Update User Details by Id
-    public ResponseEntity<?> modifyUserName(String user_id, User user) throws Exception {
+    // * [USER] Update User Information by Id
+    public ResponseEntity<?> modifyUserSecure(String user_id, User user) throws Exception {
         Optional<User> opt_db_user = user_repository.findById(user_id);
         if (opt_db_user.isPresent()) {
             User db_user = opt_db_user.get();
-            db_user.setLastName(user.getLastName());
-            db_user.setFirstName(user.getFirstName());
 
-            return ResponseEntity.status(HttpStatus.OK).body(this._getSecureUser(user_repository.save(db_user)));
+            if(!db_user.getFirstName().equals(user.getFirstName())) {
+                db_user.setFirstName(user.getFirstName());
+            }
+
+            if(!db_user.getLastName().equals(user.getLastName())) {
+                db_user.setLastName(user.getLastName());
+            }
+
+            if(!db_user.getUnverifiedEmail().equals(user.getUnverifiedEmail())) {
+                db_user.setUnverifiedEmail(user.getUnverifiedEmail());
+                db_user.setEmailVerificationCode(UUID.randomUUID().toString());
+            }
+
+            return ResponseEntity.status(HttpStatus.OK).body("");
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("The selected User could not be found. Please try again later");
         }
     }
 
-    // * Update User Email by Id
-    public ResponseEntity<?> modifyUserEmail(String user_id, User user) throws Exception {
+    // * [ADMIN] Update User Information by Id
+    public ResponseEntity<?> modifyUser(String user_id, User user) throws Exception {
         Optional<User> opt_db_user = user_repository.findById(user_id);
         if (opt_db_user.isPresent()) {
             User db_user = opt_db_user.get();
-            db_user.setUnverifiedEmail(user.getUnverifiedEmail());
-            db_user.setEmailVerificationCode(UUID.randomUUID().toString());
 
-            return ResponseEntity.status(HttpStatus.OK).body(this._getSecureUser(user_repository.save(db_user)));
+            if(!db_user.getFirstName().equals(user.getFirstName())) {
+                db_user.setFirstName(user.getFirstName());
+            }
+
+            if(!db_user.getLastName().equals(user.getLastName())) {
+                db_user.setLastName(user.getLastName());
+            }
+
+            if((db_user.getUnverifiedEmail() == null && user.getUnverifiedEmail() != null) || (db_user.getUnverifiedEmail() != null && user.getUnverifiedEmail() != null && !db_user.getUnverifiedEmail().equals(user.getUnverifiedEmail()))) {
+                db_user.setUnverifiedEmail(user.getUnverifiedEmail());
+                db_user.setEmailVerificationCode(UUID.randomUUID().toString());
+            }
+
+            if(!db_user.getVerifiedEmail().equals(user.getVerifiedEmail())) {
+                db_user.setVerifiedEmail(user.getVerifiedEmail());
+            }
+
+            user_repository.save(db_user);
+
+            return ResponseEntity.status(HttpStatus.OK).body("");
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("The selected User could not be found. Please try again later");
         }

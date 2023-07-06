@@ -20,6 +20,16 @@ public class UserController {
     public UserController() {
     }
 
+    // Get all Users
+    @GetMapping(path = "/")
+    public ResponseEntity<?> getAllUsers() {
+        try {
+            return user_service.getAllUsers();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
+        }
+    }
+
     // User Exists
     @GetMapping(path = "/{username}/exists")
     public ResponseEntity<?> userExistsByUsername(@PathVariable String username) {
@@ -70,23 +80,23 @@ public class UserController {
         }
     }
 
-    // Modify User Name
-    @PutMapping(path = "/name")
-    public ResponseEntity<?> modifyUserName(@RequestParam(required = true) String user_id, @RequestBody User user) {
+    // [USER] Modify User Name
+    @PutMapping(path = "/{user_id}")
+    public ResponseEntity<?> modifyUserSecure(@PathVariable String user_id, @RequestBody User user) {
         try {
-            return user_service.modifyUserName(user_id, user);
+            return user_service.modifyUserSecure(user_id, user);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
         }
     }
 
-    // Modify User Email
-    @PutMapping(path = "/email")
-    public ResponseEntity<?> modifyUserEmail(@RequestParam(required = true) String user_id, @RequestBody User user) {
+    // [ADMIN] Modify User Name
+    @PutMapping(path = "/{user_id}/admin")
+    public ResponseEntity<?> modifyUser(@PathVariable String user_id, @RequestBody User user) {
         try {
-            return user_service.modifyUserEmail(user_id, user);
+            return user_service.modifyUser(user_id, user);
         } catch (Exception e) {
-            return ResponseEntity.status(500).body(e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
         }
     }
 
