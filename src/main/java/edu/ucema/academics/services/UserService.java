@@ -36,6 +36,7 @@ public class UserService {
 
     // * Get all users
     public ResponseEntity<Iterable<User>> getAllUsers() {
+        Iterable<User> d = user_repository.findAll();
         return ResponseEntity.status(HttpStatus.OK).body(user_repository.findAll());
     }
 
@@ -48,7 +49,7 @@ public class UserService {
     public ResponseEntity<String> getUserIDByVerifiedEmail(String email) {
         Optional<User> opt_db_user = user_repository.findByVerifiedEmail(email);
         if (opt_db_user.isPresent()) {
-            return ResponseEntity.status(HttpStatus.OK).body(opt_db_user.get().getIdentifier());
+            return ResponseEntity.status(HttpStatus.OK).body(opt_db_user.get().getId());
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
@@ -74,7 +75,7 @@ public class UserService {
 
         // Set the User's Credential
         Credential new_credential = new Credential();
-        new_credential.setIdentifier(db_user.getIdentifier());
+        new_credential.setId(db_user.getId());
         new_credential.setPassword(password_encoder.encode(user.getCredential().getPassword()));
         new_credential.setUser(db_user);
 

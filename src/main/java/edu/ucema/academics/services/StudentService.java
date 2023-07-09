@@ -29,6 +29,17 @@ public class StudentService {
 
     // ! Business Logic
 
+    // * Get all Students
+    @Transactional
+    public ResponseEntity<?> getAllStudents() throws Exception {
+        Iterable<Student> db_students = student_repository.findAll();
+        if (db_students.iterator().hasNext()) {
+            return ResponseEntity.status(HttpStatus.OK).body(db_students);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No Students were found.");
+        }
+    }
+
     // * Create a Student Profile
     @Transactional
     public ResponseEntity<?> subscribeUser(String user_id) throws Exception {

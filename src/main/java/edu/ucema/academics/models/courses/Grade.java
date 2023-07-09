@@ -9,7 +9,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 @Entity
 @Table(name = "grade")
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "identifier")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Grade {
     // ! Attributes
     // * Data
@@ -37,14 +37,14 @@ public class Grade {
     }
 
     public Grade(String id, Course course, Student student, Float value) {
-        this.setIdentifier(id);
+        this.setId(id);
         this.setCourse(course);
         this.setStudent(student);
         this.setValue(value);
     }
 
     public Grade(Grade grade_instance) {
-        this.setIdentifier(grade_instance.getIdentifier());
+        this.setId(grade_instance.getId());
         this.setCourse(grade_instance.getCourse());
         this.setStudent(grade_instance.getStudent());
         this.setValue(grade_instance.getValue());
@@ -52,7 +52,7 @@ public class Grade {
 
     // ! Methods
     // * Getters
-    public String getIdentifier() {
+    public String getId() {
         return this.id;
     }
 
@@ -69,7 +69,7 @@ public class Grade {
     }
 
     // * Setters
-    public void setIdentifier(String id) {
+    public void setId(String id) {
         this.id = id;
     }
 

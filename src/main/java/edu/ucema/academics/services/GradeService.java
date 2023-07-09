@@ -37,7 +37,7 @@ public class GradeService {
 
     // * Modify a Grade
     public ResponseEntity<?> modifyGrade(Grade grade_instance) throws Exception {
-        Optional<Grade> opt_db_grade = grade_repository.findById(grade_instance.getIdentifier());
+        Optional<Grade> opt_db_grade = grade_repository.findById(grade_instance.getId());
         if (opt_db_grade.isPresent()) {
             Grade db_grade = opt_db_grade.get();
             db_grade.setValue(grade_instance.getValue());

@@ -10,7 +10,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "professor")
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "identifier")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public final class Professor {
     // ! Attributes
     // * Data
@@ -37,20 +37,20 @@ public final class Professor {
     }
 
     public Professor(Professor professor_instance) {
-        this.setIdentifier(professor_instance.getIdentifier());
+        this.setId(professor_instance.getId());
         this.setCourses(professor_instance.getCourses());
         this.setUser(professor_instance.getUser());
     }
 
     public Professor(String id, User user_instance, List<Course> courses_list) {
-        this.setIdentifier(id);
+        this.setId(id);
         this.setCourses(courses_list);
         this.setUser(user_instance);
     }
 
     // ! Methods
     // * Getters
-    public String getIdentifier() {
+    public String getId() {
         return this.id;
     }
 
@@ -63,7 +63,7 @@ public final class Professor {
     }
 
     // * Setters
-    public void setIdentifier(String id) {
+    public void setId(String id) {
         this.id = id;
     }
 

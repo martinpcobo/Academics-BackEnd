@@ -14,7 +14,7 @@ import java.util.Optional;
 
 @Entity
 @Table(name = "authenticator")
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "identifier")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Authenticator {
     // ! Attributes
     // * Data
@@ -65,7 +65,7 @@ public class Authenticator {
 
     // ! Methods
     // * Getters
-    public String getIdentifier() {
+    public String getId() {
         return this.id;
     }
 
@@ -94,7 +94,7 @@ public class Authenticator {
     }
 
     // * Setters
-    public void setIdentifier(String id) {
+    public void setId(String id) {
         this.id = id;
     }
 

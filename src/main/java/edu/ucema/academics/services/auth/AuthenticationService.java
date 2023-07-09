@@ -65,7 +65,7 @@ public class AuthenticationService implements CredentialRepository {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid Credentials");
         }
 
-        return ResponseEntity.status(HttpStatus.OK).body(jwt_utilities.generateToken(db_user.getVerifiedEmail(), db_user.getIdentifier()));
+        return ResponseEntity.status(HttpStatus.OK).body(jwt_utilities.generateToken(db_user.getVerifiedEmail(), db_user.getId()));
     }
 
     // ! WebAuthn Methods
@@ -88,7 +88,7 @@ public class AuthenticationService implements CredentialRepository {
                         )
                         .build());
 
-        this.requestOptionMap.put(opt_db_user.get().getIdentifier(), registration);
+        this.requestOptionMap.put(opt_db_user.get().getId(), registration);
         return ResponseEntity.status(HttpStatus.OK).body(registration.toCredentialsCreateJson());
     }
 
@@ -101,7 +101,7 @@ public class AuthenticationService implements CredentialRepository {
 
         PublicKeyCredential<AuthenticatorAttestationResponse, ClientRegistrationExtensionOutputs> pkc = PublicKeyCredential.parseRegistrationResponseJson(public_key);
 
-        PublicKeyCredentialCreationOptions registration_options = this.requestOptionMap.get(opt_db_user.get().getIdentifier());
+        PublicKeyCredentialCreationOptions registration_options = this.requestOptionMap.get(opt_db_user.get().getId());
         if (registration_options == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("The selected User did not start the Authn Registration Process, please start the process before attempting to finish it.");
         }
@@ -114,7 +114,7 @@ public class AuthenticationService implements CredentialRepository {
         Authenticator auth_instance = new Authenticator(registration_result, pkc.getResponse(), opt_db_user.get().getCredential(), credential_name);
         authenticator_repository.save(auth_instance);
 
-        return ResponseEntity.status(HttpStatus.OK).body(jwt_utilities.generateToken(opt_db_user.get().getVerifiedEmail(), opt_db_user.get().getIdentifier()));
+        return ResponseEntity.status(HttpStatus.OK).body(jwt_utilities.generateToken(opt_db_user.get().getVerifiedEmail(), opt_db_user.get().getId()));
     }
 
     // WebAuthn Start Auth Login
@@ -128,7 +128,7 @@ public class AuthenticationService implements CredentialRepository {
                 .username(opt_db_user.get().getVerifiedEmail())
                 .build());
 
-        this.assertionRequestMap.put(opt_db_user.get().getIdentifier(), assertion_request);
+        this.assertionRequestMap.put(opt_db_user.get().getId(), assertion_request);
         return ResponseEntity.status(HttpStatus.OK).body(assertion_request.toCredentialsGetJson());
     }
 
@@ -141,7 +141,7 @@ public class AuthenticationService implements CredentialRepository {
 
         PublicKeyCredential<AuthenticatorAssertionResponse, ClientAssertionExtensionOutputs> pkc = PublicKeyCredential.parseAssertionResponseJson(public_key);
 
-        AssertionRequest assertion_request = this.assertionRequestMap.get(opt_db_user.get().getIdentifier());
+        AssertionRequest assertion_request = this.assertionRequestMap.get(opt_db_user.get().getId());
         if (assertion_request == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("The selected User did not start the Authn Login Process, please start the process before attempting to finish it.");
         }
@@ -152,7 +152,7 @@ public class AuthenticationService implements CredentialRepository {
                 .build());
 
         if (assertion_result.isSuccess()) {
-            return ResponseEntity.status(HttpStatus.OK).body(jwt_utilities.generateToken(opt_db_user.get().getVerifiedEmail(), opt_db_user.get().getIdentifier()));
+            return ResponseEntity.status(HttpStatus.OK).body(jwt_utilities.generateToken(opt_db_user.get().getVerifiedEmail(), opt_db_user.get().getId()));
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed to authenticate the selected User.");
         }

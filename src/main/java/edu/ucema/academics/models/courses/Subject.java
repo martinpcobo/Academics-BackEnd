@@ -1,6 +1,7 @@
 package edu.ucema.academics.models.courses;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import org.hibernate.annotations.GenericGenerator;
@@ -9,7 +10,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "subject")
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "identifier")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Subject {
     // Attributes
     @Id
@@ -18,6 +19,8 @@ public class Subject {
     private String id;
     @Column(name = "name")
     private String name;
+
+    @JsonIgnore
     @OneToMany(mappedBy = "subject", fetch = FetchType.LAZY)
     private List<Class> classes;
 
@@ -27,18 +30,18 @@ public class Subject {
 
     public Subject(String subject_id, String subject_name, List<Class> classes_list) {
         this.setName(subject_name);
-        this.setIdentifier(subject_id);
+        this.setId(subject_id);
         this.setClasses(classes_list);
     }
 
     public Subject(Subject subject_instance) {
         this.setName(subject_instance.getName());
-        this.setIdentifier(subject_instance.getIdentifier());
+        this.setId(subject_instance.getId());
         this.setClasses(subject_instance.getClasses());
     }
 
     // Getters
-    public String getIdentifier() {
+    public String getId() {
         return this.id;
     }
 
@@ -51,7 +54,7 @@ public class Subject {
     }
 
     // Setters
-    public void setIdentifier(String id) {
+    public void setId(String id) {
         this.id = id;
     }
 

@@ -13,7 +13,7 @@ import java.util.List;
 
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "identifier")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Course {
     // ! Attributes
     // * Data
@@ -49,7 +49,7 @@ public class Course {
     }
 
     public Course(String course_id, List<Student> students_list, List<Professor> professors_list, Date course_start_date, Date course_end_date, String course_name, String course_description, List<Grade> grades_list) {
-        this.setIdentifier(course_id);
+        this.setId(course_id);
         this.setStudents(students_list);
         this.setProfessors(professors_list);
         this.setStartDate(course_start_date);
@@ -60,7 +60,7 @@ public class Course {
     }
 
     public Course(Course course_instance) {
-        this.setIdentifier(course_instance.getIdentifier());
+        this.setId(course_instance.getId());
         this.setStudents(course_instance.getStudents());
         this.setProfessors(course_instance.getProfessors());
         this.setEndDate(course_instance.getEndDate());
@@ -72,7 +72,7 @@ public class Course {
 
     // ! Methods
     // * Getters
-    public String getIdentifier() {
+    public String getId() {
         return this.id;
     }
 
@@ -105,7 +105,7 @@ public class Course {
     }
 
     // * Setters
-    public void setIdentifier(String course_id) {
+    public void setId(String course_id) {
         this.id = course_id;
     }
 

@@ -2,7 +2,6 @@ package edu.ucema.academics.services;
 
 import edu.ucema.academics.models.courses.Subject;
 import edu.ucema.academics.repositories.SubjectRepository;
-import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -49,7 +48,7 @@ public class SubjectService {
 
     // * Update Subject
     public ResponseEntity<?> modifySubject(Subject subject_instance) throws Exception {
-        Optional<Subject> opt_db_subject = subject_repositories.findById(subject_instance.getIdentifier());
+        Optional<Subject> opt_db_subject = subject_repositories.findById(subject_instance.getId());
         if (opt_db_subject.isPresent()) {
             Subject db_subject = opt_db_subject.get();
             db_subject.setName(subject_instance.getName());

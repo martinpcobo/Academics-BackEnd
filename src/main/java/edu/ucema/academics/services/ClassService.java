@@ -6,7 +6,6 @@ import edu.ucema.academics.models.users.Student;
 import edu.ucema.academics.repositories.ClassRepository;
 import edu.ucema.academics.repositories.ProfessorRepository;
 import edu.ucema.academics.repositories.StudentRepository;
-import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
@@ -73,7 +71,7 @@ public class ClassService {
     // * Update the details of a Class
     @Transactional
     public ResponseEntity<?> modifyClassDetails(Class class_instance) throws Exception {
-        Optional<Class> opt_db_class = class_repository.findById(class_instance.getIdentifier());
+        Optional<Class> opt_db_class = class_repository.findById(class_instance.getId());
         if (opt_db_class.isPresent()) {
             Class db_class = opt_db_class.get();
 

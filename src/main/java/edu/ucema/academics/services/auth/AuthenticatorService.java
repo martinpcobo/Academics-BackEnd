@@ -9,7 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -50,7 +49,7 @@ public class AuthenticatorService {
         }
         Authenticator db_authenticator = opt_db_authenticator.get();
 
-        if (db_authenticator.getCredential().getUser().getIdentifier().equals(user_id)) {
+        if (db_authenticator.getCredential().getUser().getId().equals(user_id)) {
             db_authenticator.setName(new_name);
             authenticator_repository.save(db_authenticator);
 
@@ -68,7 +67,7 @@ public class AuthenticatorService {
         }
         Authenticator db_authenticator = opt_db_authenticator.get();
 
-        if (db_authenticator.getCredential().getUser().getIdentifier().equals(user_id)) {
+        if (db_authenticator.getCredential().getUser().getId().equals(user_id)) {
             authenticator_repository.delete(db_authenticator);
 
             return ResponseEntity.status(HttpStatus.OK).body("Successfully deleted the Authenticator.");
@@ -85,7 +84,7 @@ public class AuthenticatorService {
         }
         Authenticator db_authenticator = opt_db_authenticator.get();
 
-        if (db_authenticator.getCredential().getUser().getIdentifier().equals(user_id)) {
+        if (db_authenticator.getCredential().getUser().getId().equals(user_id)) {
             return ResponseEntity.status(HttpStatus.OK).body(db_authenticator);
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("The selected Authenticator does not belong to the selected User.");
