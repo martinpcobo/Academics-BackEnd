@@ -4,6 +4,7 @@ import edu.ucema.academics.models.auth.Authenticator;
 import edu.ucema.academics.models.users.User;
 import edu.ucema.academics.repositories.AuthenticatorRepository;
 import edu.ucema.academics.repositories.UserRepository;
+import org.hibernate.boot.MappingNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,10 +23,10 @@ public class AuthenticatorService {
 
     // ! Business Logic
     // * Get Authenticators from Username
-    public ResponseEntity<?> getAuthenticatorsFormUser(String user_id) {
+    public ResponseEntity<Iterable<Authenticator>> getAuthenticatorsFormUser(String user_id) {
         Optional<User> user = user_repository.findById(user_id);
         if (user.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Could not find the selected User, please try again later.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         } else {
             return ResponseEntity.status(HttpStatus.OK).body(authenticator_repository.findAllByCredential(user.get().getCredential()));
         }

@@ -167,15 +167,16 @@ public class AuthenticationService implements CredentialRepository {
 
         if (user.isEmpty()) return null;
 
-        List<Authenticator> auth = authenticator_repository.findAllByCredential(user.get().getCredential());
+        Iterable<Authenticator> auth = authenticator_repository.findAllByCredential(user.get().getCredential());
 
-        return auth.stream()
-                .map(
-                        credential ->
-                                PublicKeyCredentialDescriptor.builder()
-                                        .id(credential.getAuthenticatorId())
-                                        .build())
-                .collect(Collectors.toSet());
+        Set<PublicKeyCredentialDescriptor> credential_ids = new HashSet<>();
+
+        Iterator<Authenticator> authenticators = auth.iterator();
+        while(authenticators.hasNext()) {
+            credential_ids.add(PublicKeyCredentialDescriptor.builder().id(authenticators.next().getAuthenticatorId()).build());
+        }
+
+        return credential_ids;
     }
 
     // Get User Handle from Username

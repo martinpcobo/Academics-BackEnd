@@ -1,8 +1,10 @@
 package edu.ucema.academics.controllers.auth;
 
+import edu.ucema.academics.models.auth.Authenticator;
 import edu.ucema.academics.services.auth.AuthenticatorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,12 +18,12 @@ public class AuthenticatorController {
 
     // ! Endpoints
     // * Get User's Authenticators
-    @GetMapping(path = "/{user_id}")
-    public ResponseEntity<?> getAuthenticators(@PathVariable String user_id) {
+    @GetMapping(path = "/{user_id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Iterable<Authenticator>> getAuthenticators(@PathVariable String user_id) {
         try {
             return authenticator_service.getAuthenticatorsFormUser(user_id);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
 

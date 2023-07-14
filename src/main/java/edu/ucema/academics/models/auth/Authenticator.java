@@ -1,6 +1,7 @@
 package edu.ucema.academics.models.auth;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.yubico.webauthn.RegistrationResult;
 import com.yubico.webauthn.data.AttestedCredentialData;
@@ -44,6 +45,7 @@ public class Authenticator {
 
     // * Relationships
     @ManyToOne
+    @JsonIgnore
     private Credential credential;
 
     // ! Constructors
