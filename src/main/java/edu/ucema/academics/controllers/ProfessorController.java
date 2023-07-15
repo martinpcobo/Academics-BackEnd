@@ -18,6 +18,16 @@ public class ProfessorController {
     ProfessorService professor_service;
 
     // ! Endpoints
+    // * Get all Professors
+    @GetMapping(path = "/")
+    public ResponseEntity<?> getAllProfessors() {
+        try {
+            return professor_service.getAllProfessors();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
+        }
+    }
+
     // * Create Professor
     @PostMapping(path = "/{user_id}")
     public ResponseEntity<?> subscribeProfessor(@PathVariable String user_id) {

@@ -9,10 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping(value = "/api/grade")
-@CrossOrigin(
-        origins = "*",
-        methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE}
-)
+@CrossOrigin(origins = "http://localhost:4200", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE})
 public class GradeController {
     // ! Injected Dependencies
     @Autowired
@@ -24,6 +21,26 @@ public class GradeController {
     public ResponseEntity<?> recordGrade(@RequestBody Grade grade_instance) {
         try {
             return grade_service.recordGrade(grade_instance);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
+        }
+    }
+
+    // * Get all Grades from a Class
+    @GetMapping(path = "/course/{course_id}")
+    public ResponseEntity<?> getGradesFromCourse(@PathVariable String course_id) {
+        try {
+            return grade_service.getGradesFromCourse(course_id);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
+        }
+    }
+
+    // * Get all Grades from a Student
+    @GetMapping(path = "/student/{student_id}")
+    public ResponseEntity<?> getGradesFromStudent(@PathVariable String student_id) {
+        try {
+            return grade_service.getGradesFromStudent(student_id);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
         }

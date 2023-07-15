@@ -8,15 +8,21 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping(value = "/api/student")
-@CrossOrigin(
-        origins = "*",
-        methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE}
-)
+@CrossOrigin(origins = "http://localhost:4200",allowCredentials = "true", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE})
 public class StudentController {
     @Autowired
     private StudentService student_service;
 
     public StudentController() {
+    }
+
+    @GetMapping(path = "/")
+    public ResponseEntity<?> getAllStudents() {
+        try {
+            return student_service.getAllStudents();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
+        }
     }
 
     @PostMapping(path = "/{user_id}")
@@ -37,7 +43,6 @@ public class StudentController {
         }
     }
 
-    // TODO: Endpoints to be tested.
     @GetMapping(path = "/{student_id}")
     public ResponseEntity<?> getStudentById(@PathVariable String student_id) {
         try {

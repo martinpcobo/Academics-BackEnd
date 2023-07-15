@@ -28,6 +28,11 @@ public class ProfessorService {
     }
 
     // ! Business Logic
+    // * Get all Professors
+    public ResponseEntity<?> getAllProfessors() throws Exception {
+        return ResponseEntity.status(HttpStatus.OK).body(professor_repository.findAll());
+    }
+
     // * Create a Professor Profile
     @Transactional
     public ResponseEntity<?> subscribeProfessor(String user_id) throws Exception {

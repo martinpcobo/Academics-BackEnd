@@ -35,9 +35,19 @@ public class GradeService {
         }
     }
 
+    // * Get Grades from Course
+    public ResponseEntity<?> getGradesFromCourse(String course_id) throws Exception {
+        return ResponseEntity.status(HttpStatus.OK).body(grade_repository.findAllByCourseId(course_id));
+    }
+
+    // * Get Grades from Student
+    public ResponseEntity<?> getGradesFromStudent(String student_id) throws Exception {
+        return ResponseEntity.status(HttpStatus.OK).body(grade_repository.findAllByStudentId(student_id));
+    }
+
     // * Modify a Grade
     public ResponseEntity<?> modifyGrade(Grade grade_instance) throws Exception {
-        Optional<Grade> opt_db_grade = grade_repository.findById(grade_instance.getIdentifier());
+        Optional<Grade> opt_db_grade = grade_repository.findById(grade_instance.getId());
         if (opt_db_grade.isPresent()) {
             Grade db_grade = opt_db_grade.get();
             db_grade.setValue(grade_instance.getValue());

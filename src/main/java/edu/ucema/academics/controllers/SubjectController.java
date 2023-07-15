@@ -1,6 +1,6 @@
 package edu.ucema.academics.controllers;
 
-import edu.ucema.academics.models.Subject;
+import edu.ucema.academics.models.courses.Subject;
 import edu.ucema.academics.services.SubjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -9,20 +9,24 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping(value = "/api/subject")
-@CrossOrigin(
-        origins = "*",
-        methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE}
-)
+@CrossOrigin(origins = "http://localhost:4200",allowCredentials = "true", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE})
 public class SubjectController {
     // Injectable Services
     @Autowired
     SubjectService subject_service;
 
-    // Constructor
-    public void SubjectController() {
+    // ! Endpoints
+
+    // * Get all Subjects
+    @GetMapping(path = "/")
+    public ResponseEntity<?> getAllSubjects() {
+        try {
+            return subject_service.getAllSubjects();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
+        }
     }
 
-    // ! Endpoints
     // * Create Subject
     @PostMapping(path = "/")
     public ResponseEntity<?> createSubject(@RequestBody Subject subject_instance) {

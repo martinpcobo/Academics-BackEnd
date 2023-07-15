@@ -10,7 +10,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "student")
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "identifier")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public final class Student {
     // ! Attributes
     // * Data
@@ -38,14 +38,14 @@ public final class Student {
     }
 
     public Student(Student student_instance) {
-        this.setIdentifier(student_instance.getIdentifier());
+        this.setId(student_instance.getId());
         this.setCourses(student_instance.getCourses());
         this.setUser(student_instance.getUser());
         this.setGrades(student_instance.getGrades());
     }
 
     public Student(String id, User user, List<Course> student_courses, List<Grade> grades_list) {
-        this.setIdentifier(id);
+        this.setId(id);
         this.setUser(user);
         this.setCourses(student_courses);
         this.setGrades(grades_list);
@@ -53,7 +53,7 @@ public final class Student {
 
     // ! Methods
     // * Getters
-    public String getIdentifier() {
+    public String getId() {
         return this.id;
     }
 
@@ -70,7 +70,7 @@ public final class Student {
     }
 
     // * Setters
-    public void setIdentifier(String id) {
+    public void setId(String id) {
         this.id = id;
     }
 

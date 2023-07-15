@@ -32,6 +32,21 @@ public class ClassService {
 
     // ! Business Logic
 
+    // * Get all Classes
+    public ResponseEntity<Iterable<Class>> getAllClasses() {
+        return ResponseEntity.status(200).body(class_repository.findAll());
+    }
+
+    // * Get Classes from Student
+    public ResponseEntity<Iterable<Class>> getClassesFromStudent(String student_id) {
+        Optional<Student> opt_db_student = student_repository.findById(student_id);
+        if (opt_db_student.isPresent()) {
+            return ResponseEntity.status(HttpStatus.OK).body(this.class_repository.findClassesByStudentsContaining(opt_db_student.get()));
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ArrayList<>());
+        }
+    }
+
     // * Create a Class
     public ResponseEntity<Class> createClass(Class class_instance) throws Exception {
         return ResponseEntity.status(200).body(class_repository.save(new Class(class_instance)));
@@ -66,7 +81,7 @@ public class ClassService {
     // * Update the details of a Class
     @Transactional
     public ResponseEntity<?> modifyClassDetails(Class class_instance) throws Exception {
-        Optional<Class> opt_db_class = class_repository.findById(class_instance.getIdentifier());
+        Optional<Class> opt_db_class = class_repository.findById(class_instance.getId());
         if (opt_db_class.isPresent()) {
             Class db_class = opt_db_class.get();
 

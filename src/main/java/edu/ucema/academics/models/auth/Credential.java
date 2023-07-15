@@ -12,7 +12,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "credential")
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "identifier")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Credential {
     // ! Attributes
     // * Data
@@ -37,14 +37,14 @@ public class Credential {
     }
 
     public Credential(User user, String password, List<Authenticator> authenticators) {
-        this.setIdentifier(user.getIdentifier());
+        this.setId(user.getId());
         this.setPassword(password);
         this.setUser(user);
         this.setAuthenticators(authenticators);
     }
 
     public Credential(Credential credential_instance) {
-        this.setIdentifier(credential_instance.getIdentifier());
+        this.setId(credential_instance.getId());
         this.setPassword(credential_instance.getPassword());
         this.setUser(credential_instance.getUser());
         this.setAuthenticators(credential_instance.getAuthenticators());
@@ -52,7 +52,7 @@ public class Credential {
 
     // ! Methods
     // * Getters
-    public String getIdentifier() {
+    public String getId() {
         return this.id;
     }
 
@@ -70,7 +70,7 @@ public class Credential {
 
 
     // * Setters
-    public void setIdentifier(String identifier) {
+    public void setId(String identifier) {
         this.id = identifier;
     }
 

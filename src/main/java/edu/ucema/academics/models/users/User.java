@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.yubico.webauthn.data.ByteArray;
 import edu.ucema.academics.models.auth.Credential;
-import edu.ucema.academics.models.users.interfaces.EUserRoles;
+import edu.ucema.academics.models.users.enums.EUserRoles;
 import edu.ucema.academics.utilities.ByteArrayAttributeConverter;
 import jakarta.persistence.*;
 import org.hibernate.annotations.GenericGenerator;
@@ -20,7 +20,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "user")
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "identifier")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class User implements UserDetails {
     // ! Attributes
     // * Data
@@ -63,7 +63,7 @@ public class User implements UserDetails {
     }
 
     public User(String user_id, String user_name, String user_last_name, String verified_email, String unverified_email, String email_verification_code, Credential user_credential, Student student_profile, Professor professor_profile, ByteArray handle) {
-        this.setIdentifier(user_id);
+        this.setId(user_id);
         this.setFirstName(user_name);
         this.setLastName(user_last_name);
         this.setVerifiedEmail(verified_email);
@@ -80,7 +80,7 @@ public class User implements UserDetails {
     public User(User user_instance) {
         if (user_instance == null) return;
 
-        this.setIdentifier(user_instance.getIdentifier());
+        this.setId(user_instance.getId());
         this.setFirstName(user_instance.getFirstName());
         this.setLastName(user_instance.getLastName());
         this.setVerifiedEmail(user_instance.getVerifiedEmail());
@@ -96,7 +96,7 @@ public class User implements UserDetails {
 
     // ! Methods
     // * Getters
-    public String getIdentifier() {
+    public String getId() {
         return this.id;
     }
 
@@ -151,7 +151,7 @@ public class User implements UserDetails {
 
 
     // * Setters
-    public void setIdentifier(String user_id) {
+    public void setId(String user_id) {
         this.id = user_id;
     }
 
