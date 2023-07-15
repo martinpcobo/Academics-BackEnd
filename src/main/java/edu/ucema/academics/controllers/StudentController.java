@@ -43,7 +43,6 @@ public class StudentController {
         }
     }
 
-    // TODO: Endpoints to be tested.
     @GetMapping(path = "/{student_id}")
     public ResponseEntity<?> getStudentById(@PathVariable String student_id) {
         try {

@@ -50,6 +50,16 @@ public class ClassController {
         }
     }
 
+    // * Get Classes from Student
+    @GetMapping(path = "/student/{student_id}")
+    public ResponseEntity<?> getClassesFromStudent(@PathVariable String student_id) {
+        try {
+            return class_service.getClassesFromStudent(student_id);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
+        }
+    }
+
     // * Delete a class
     @DeleteMapping(path = "/{class_id}")
     public ResponseEntity<?> deleteClass(@PathVariable String class_id) {

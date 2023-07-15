@@ -22,6 +22,8 @@ public class StudentService {
     private StudentRepository student_repository;
     @Autowired
     private UserRepository user_repository;
+    @Autowired
+    private GradeService grade_service;
 
     // ! Constructors
     public StudentService() {
@@ -71,10 +73,15 @@ public class StudentService {
         Optional<Student> opt_db_student = student_repository.findById(student_id);
         if (opt_db_student.isPresent()) {
             Student db_student = opt_db_student.get();
+
+            for (Grade grade_instance : db_student.getGrades()) {
+                this.grade_service.deleteGrade(grade_instance.getId());
+            }
+
             student_repository.delete(db_student);
 
             if (student_repository.findById(student_id).isEmpty()) {
-                return ResponseEntity.status(HttpStatus.OK).body("The selected User was deleted successfully.");
+                return ResponseEntity.status(HttpStatus.OK).body("The selected Student was deleted successfully.");
             } else {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("The selected Student could not be deleted. Please try again later.");
             }
